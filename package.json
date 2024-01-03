@@ -8,7 +8,8 @@
     "dev": "nodemon index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "migrate:update": "npx prisma migrate dev --name init",
-    "migrate:create": "npx prisma migrate dev --create-only"
+    "migrate:create": "npx prisma migrate dev --create-only",
+    "seed": "ts-node ./prisma/seed.ts"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,7 @@
   "homepage": "https://gitlab.com/Ashaffah/express-typescript#readme",
   "dependencies": {
     "@prisma/client": "^5.2.0",
+    "axios": "^1.6.3",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "express": "^4.18.2",

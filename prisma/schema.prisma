@@ -10,31 +10,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model AccountRole {
-  name    String    @id @unique
-  roleNum Int       @unique
-  Account Account[]
-}
-
 model User {
-  id        Int      @id @default(autoincrement())
-  Account   Account?
-  firstName String
-  lastName  String
-  birtDate  DateTime @db.Date
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Account {
-  id              Int         @id @default(autoincrement())
-  userId          Int         @unique
-  User            User        @relation(fields: [userId], references: [id])
-  username        String
-  password        String
-  accountRoleName String
-  role            AccountRole @relation(fields: [accountRoleName], references: [name])
+  id       Int    @id @default(autoincrement())
+  username String
+  password String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

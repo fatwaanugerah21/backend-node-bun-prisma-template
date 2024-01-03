@@ -6,15 +6,7 @@ class UserRoute {
   static router = express.Router();
 
   static routes(): Router {
-    this.router.post("/", AuthMiddleware.mustLogin, UserController.createUser);
-    this.router.get("/", UserController.getUsers);
-    this.router.get("/:id", UserController.getUser);
-    this.router.put("/:id", AuthMiddleware.mustLogin, UserController.putUser);
-    this.router.delete(
-      "/:id",
-      AuthMiddleware.mustLogin,
-      UserController.deleteUser
-    );
+    this.router.post("/", UserController.createUser);
 
     return this.router;
   }

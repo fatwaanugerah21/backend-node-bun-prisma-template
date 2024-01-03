@@ -1,4 +1,3 @@
-import { TErrorMsg } from "../constants/error-msgs.constant";
 import { TResponse } from "../types/response.type";
 
 export function successResponse(data: any): TResponse<any> {

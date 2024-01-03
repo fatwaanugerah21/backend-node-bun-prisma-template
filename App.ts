@@ -3,13 +3,14 @@ import createError from "http-errors";
 import cors from "cors";
 import { Server, Socket } from "socket.io";
 import type {
-  PollState,
   ClientToServerEvents,
   ServerToClientEvents,
   InterServerEvents,
   SocketData,
 } from "./src/types/indexType";
 import UserRoute from "./src/routes/user.route";
+import JobRoute from "./src/routes/job.route";
+import AuthRoute from "./src/routes/auth.route";
 
 class App {
   public app: Application;
@@ -52,7 +53,9 @@ class App {
     `);
     });
 
+    this.app.use("/auth", AuthRoute.routes());
     this.app.use("/users", UserRoute.routes());
+    this.app.use("/jobs", JobRoute.routes());
 
     // Routes not found
     this.app.use((req: Request, res: Response, next: NextFunction) => {

@@ -1,9 +1,4 @@
-import { UserRole } from "@prisma/client";
-
 export type TCreateUserBody = {
-  name: string;
-  email: string;
-  phoneNumber: string;
+  username: string;
   password: string;
-  role: UserRole;
 };
