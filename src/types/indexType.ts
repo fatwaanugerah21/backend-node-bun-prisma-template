@@ -1,3 +1,5 @@
+export type TFetchAllParams = { offset?: number; limit?: number };
+
 type PollState = {
   question: string;
   options: {

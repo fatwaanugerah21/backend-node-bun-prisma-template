@@ -1,6 +1,5 @@
 export type TResponse<T> = {
   code: number;
-  status: "SUCCESS" | "FAILED";
-  description?: string;
+  message?: string;
   data?: T;
 };

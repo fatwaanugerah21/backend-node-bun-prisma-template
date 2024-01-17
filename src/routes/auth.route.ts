@@ -6,6 +6,7 @@ class AuthRoute {
 
   static routes(): Router {
     this.router.post("/login", AuthController.login);
+    this.router.post("/signup", AuthController.signup);
 
     return this.router;
   }

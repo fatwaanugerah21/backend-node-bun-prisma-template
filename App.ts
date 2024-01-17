@@ -9,8 +9,8 @@ import type {
   SocketData,
 } from "./src/types/indexType";
 import UserRoute from "./src/routes/user.route";
-import JobRoute from "./src/routes/job.route";
 import AuthRoute from "./src/routes/auth.route";
+import GlosariumRoute from "./src/routes/glosarium.route";
 
 class App {
   public app: Application;
@@ -55,7 +55,7 @@ class App {
 
     this.app.use("/auth", AuthRoute.routes());
     this.app.use("/users", UserRoute.routes());
-    this.app.use("/jobs", JobRoute.routes());
+    this.app.use("/glosariums", GlosariumRoute.routes());
 
     // Routes not found
     this.app.use((req: Request, res: Response, next: NextFunction) => {

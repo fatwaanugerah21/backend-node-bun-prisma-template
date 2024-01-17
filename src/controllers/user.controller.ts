@@ -1,23 +1,16 @@
 import { Request, Response } from "express";
-
-import UserService from "../services/user.service";
 import { errorResponse, successResponse } from "../utils/responses.util";
-import { TCreateUserBody } from "../types/user.type";
-import BcryptLib from "../libs/bcrypt.lib";
+import UserRepository from "../repositories/user.repository";
 
 class UserController {
-  static async createUser(req: Request, resp: Response) {
+  static async getUsers(req: Request, resp: Response) {
     try {
-      const data = req.body as TCreateUserBody;
+      const users = await UserRepository.getUsers();
 
-      const hashedPassword = BcryptLib.hashPassword(data.password);
-      data.password = hashedPassword;
-      const user = await UserService.createUser(data);
-
-      resp.json(successResponse(user));
+      resp.json(successResponse(users));
     } catch (error) {
-      resp.json(errorResponse(400, error + ""));
-      console.error("Error: ", error);
+      console.error(error);
+      resp.json(errorResponse(error + ""));
     }
   }
 }

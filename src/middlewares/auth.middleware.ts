@@ -7,13 +7,13 @@ class AuthMiddleware {
     try {
       const authorization = req.headers.authorization;
       if (!authorization) {
-        res.json(errorResponse(401, "UNAUTHORIZED∫"));
+        res.json(errorResponse("403|UNAUTHORIZED"));
         return;
       }
 
       const token = authorization?.split(" ")[1];
       if (!token) {
-        res.json(errorResponse(401, "UNAUTHORIZED∫"));
+        res.json(errorResponse("403|UNAUTHORIZED"));
         return;
       }
 

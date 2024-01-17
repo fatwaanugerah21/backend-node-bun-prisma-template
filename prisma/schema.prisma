@@ -10,11 +10,162 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  ADMIN
+  STUDENT
+  TEACHER
+}
+
+enum QuestionStatus {
+  OPEN
+  ON_DISCUSSION
+  SOLVED
+}
+
+enum QuestionType {
+  PRIVATE
+  GENERAL
+}
+
 model User {
-  id       Int    @id @default(autoincrement())
-  username String
-  password String
+  id          Int        @id @default(autoincrement())
+  name        String
+  username    String     @unique
+  email       String     @unique
+  password    String
+  birthDate   DateTime   @db.Date
+  phoneNumber String
+  role        UserRole
+  questions   Question[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Comment   Comment[]
+}
+
+model Glosarium {
+  id          Int    @id @default(autoincrement())
+  title       String @unique
+  description String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id        Int        @id @default(autoincrement())
+  name      String
+  books     Book[]
+  questions Question[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Book {
+  id          Int      @id @default(autoincrement())
+  title       String   @unique
+  publisher   String
+  writer      String
+  cateogryId  Int
+  category    Category @relation(fields: [cateogryId], references: [id])
+  synopsis    String
+  pageAmt     Int
+  releaseDate DateTime @db.Date
+  coverImage  String
+  bookUrl     String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Question {
+  id          Int            @id @default(autoincrement())
+  title       String
+  description String
+  status      QuestionStatus
+  type        QuestionType
+  askerId     Int
+  asker       User           @relation(fields: [askerId], references: [id])
+  handlerId   Int?
+  categoryId  Int
+  category    Category       @relation(fields: [categoryId], references: [id])
+  comment     Comment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Comment {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  questionId Int
+  question   Question @relation(fields: [questionId], references: [id])
+  text       String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Course {
+  id          Int    @id @default(autoincrement())
+  title       String
+  coverImg    String
+  description String @db.LongText
+
+  Curriculum Curriculum[]
+}
+
+model Curriculum {
+  id       Int    @id @default(autoincrement())
+  title    String
+  courseId Int
+
+  course   Course    @relation(fields: [courseId], references: [id])
+  articles Article[]
+  quizzes  Quiz[]
+}
+
+model Article {
+  id             Int    @id @default(autoincrement())
+  title          String
+  material       String @db.LongText
+  sequenceNumber Int
+  duration       Int // This is always in minutes
+
+  curriculumId Int
+  curriculum   Curriculum @relation(fields: [curriculumId], references: [id])
+}
+
+model Quiz {
+  id                       Int    @id @default(autoincrement())
+  title                    String
+  material                 String @db.LongText
+  sequenceNumber           Int
+  duration                 Int // This is always in minutes
+  minimumCorrectnessToPass Int
+
+  curriculumId  Int
+  curriculum    Curriculum     @relation(fields: [curriculumId], references: [id])
+  quizQuestions QuizQuestion[]
+}
+
+model QuizQuestion {
+  id              Int    @id @default(autoincrement())
+  title           String
+  questionNumber  Int
+  correctOptionId Int
+
+  quizId              Int
+  quiz                Quiz                  @relation(fields: [quizId], references: [id])
+  quizQuestionOptions QuizQuestionOptions[]
+}
+
+model QuizQuestionOptions {
+  id    Int    @id @default(autoincrement())
+  title String
+
+  quizQuestionId Int
+  QuizQuestion   QuizQuestion @relation(fields: [quizQuestionId], references: [id])
 }

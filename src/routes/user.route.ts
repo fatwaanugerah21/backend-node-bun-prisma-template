@@ -1,12 +1,11 @@
 import express, { Router } from "express";
 import UserController from "../controllers/user.controller";
-import AuthMiddleware from "../middlewares/auth.middleware";
 
 class UserRoute {
   static router = express.Router();
 
   static routes(): Router {
-    this.router.post("/", UserController.createUser);
+    this.router.get("/", UserController.getUsers);
 
     return this.router;
   }

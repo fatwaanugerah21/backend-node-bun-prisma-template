@@ -1,20 +1,33 @@
-import { TJobPosting, TGetJobsParams } from "../types/job.type";
+import { TFetchAllParams } from "../types/indexType";
 
-export function searchJobs(
-  jobs: TJobPosting[],
-  filter: TGetJobsParams
-): TJobPosting[] {
-  return jobs.filter((job) => {
-    const termMatch =
-      !filter.description ||
-      job.title.toLowerCase().includes(filter.description.toLowerCase());
-    const locationMatch =
-      !filter.location ||
-      job.location.toLowerCase().includes(filter.location.toLowerCase());
-    const fullTimeMatch =
-      filter.fullTime === undefined ||
-      job.type.toLowerCase() === (filter.fullTime ? "full time" : "part time");
+export function getDefaultStartAndOffset(
+  offset?: string,
+  limit?: string
+): TFetchAllParams {
+  let finalOffset = getDefaultQueryOffset();
+  let finalLimit = getDefaultQueryLimit();
 
-    return termMatch && locationMatch && fullTimeMatch;
-  });
+  if (!!offset || offset === "0") finalOffset = parseInt(offset);
+  if (!!limit || limit === "0") finalLimit = parseInt(limit);
+
+  console.log("limit: ", limit);
+  console.log("finalLimit: ", finalLimit);
+
+  return { offset: finalOffset, limit: finalLimit };
+}
+
+export function getDefaultQueryLimit(): number {
+  return 1000;
+}
+
+export function getDefaultQueryOffset(): number {
+  return 0;
+}
+
+export function isParseableInteger(str: string) {
+  // Use Number.parseInt() to parse the string as an integer
+  const parsedValue = Number.parseInt(str, 10);
+
+  // Check if the parsed value is a valid integer
+  return Number.isInteger(parsedValue);
 }
