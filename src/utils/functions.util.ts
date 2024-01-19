@@ -10,9 +10,6 @@ export function getDefaultStartAndOffset(
   if (!!offset || offset === "0") finalOffset = parseInt(offset);
   if (!!limit || limit === "0") finalLimit = parseInt(limit);
 
-  console.log("limit: ", limit);
-  console.log("finalLimit: ", finalLimit);
-
   return { offset: finalOffset, limit: finalLimit };
 }
 

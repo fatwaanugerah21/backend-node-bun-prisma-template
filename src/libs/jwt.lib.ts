@@ -16,9 +16,7 @@ class JwtLib {
 
   static async createToken(payload: TJwtPayload) {
     try {
-      const token = jwt.sign(payload, this.jwtSecret, {
-        expiresIn: "24h",
-      });
+      const token = jwt.sign(payload, this.jwtSecret, {});
 
       return token;
     } catch (error) {

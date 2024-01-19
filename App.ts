@@ -11,6 +11,9 @@ import type {
 import UserRoute from "./src/routes/user.route";
 import AuthRoute from "./src/routes/auth.route";
 import GlosariumRoute from "./src/routes/glosarium.route";
+import CategoryRoute from "./src/routes/categories.route";
+import BookRoute from "./src/routes/books.route";
+import IOLib from "./src/libs/io.lib";
 
 class App {
   public app: Application;
@@ -36,6 +39,7 @@ class App {
         methods: ["GET", "POST", "PUT", "DELETE"],
       },
     });
+    IOLib.configure();
     this.initializeMiddlewares();
     this.initializeRoutes();
     this.initializeSocket();
@@ -56,6 +60,10 @@ class App {
     this.app.use("/auth", AuthRoute.routes());
     this.app.use("/users", UserRoute.routes());
     this.app.use("/glosariums", GlosariumRoute.routes());
+    this.app.use("/categories", CategoryRoute.routes());
+    this.app.use("/books", BookRoute.routes());
+
+    this.app.use("/files", IOLib.routes());
 
     // Routes not found
     this.app.use((req: Request, res: Response, next: NextFunction) => {

@@ -1,37 +1,31 @@
 import { Request, Response } from "express";
-import BcryptLib from "../libs/bcrypt.lib";
-import UserRepository, {
-  TCreateUserBody,
-} from "../repositories/user.repository";
 import { errorResponse, successResponse } from "../utils/responses.util";
-import JwtLib from "../libs/jwt.lib";
 import Joi from "joi";
-import { UserRole } from "@prisma/client";
-import GlosariumRepository, {
-  TCreateGlosariumBody,
-} from "../repositories/glosarium.repository";
+import CategoryRepository, {
+  TCreateCategoryBody,
+} from "../repositories/category.repository";
 import { getDefaultStartAndOffset as getDefaultOffsetAndLimit } from "../utils/functions.util";
 
-class GlosariumController {
+class CategoryController {
   static async create(req: Request, resp: Response) {
-    const createGlosariumSchema = Joi.object<TCreateGlosariumBody>({
-      title: Joi.string().required().messages({
+    const createCategorySchema = Joi.object<TCreateCategoryBody>({
+      name: Joi.string().required().messages({
         "any.required": "NO_TITLE_ERROR",
-        "string.base": "TITLE_MUST_BE_STRING",
-      }),
-      description: Joi.string().required().messages({
-        "any.required": "NO_DESCRIPTION_ERROR",
-        "string.base": "DESCRIPTION_MUST_BE_STRING",
+        "string.base": "NAME_MUST_BE_STRING",
       }),
     });
 
     try {
       const body = req.body;
+      const files = req.file;
+      console.log("files: ", files);
+      resp.json("good");
 
-      const { error } = createGlosariumSchema.validate(body);
+      const { error } = createCategorySchema.validate(body);
       if (!!error) throw error.message;
 
-      const glosariums = await GlosariumRepository.createGlosarium(body);
+      return;
+      const glosariums = await CategoryRepository.createCategory(body);
       resp.json(successResponse(glosariums));
     } catch (error) {
       console.error(error);
@@ -40,12 +34,9 @@ class GlosariumController {
   }
 
   static async update(req: Request, resp: Response) {
-    const updateGlosariumSchema = Joi.object<TCreateGlosariumBody>({
-      title: Joi.string().messages({
-        "string.base": "TITLE_MUST_BE_STRING",
-      }),
-      description: Joi.string().messages({
-        "string.base": "DESCRIPTION_MUST_BE_STRING",
+    const updateCategorySchema = Joi.object<TCreateCategoryBody>({
+      name: Joi.string().messages({
+        "string.base": "NAME_MUST_BE_STRING",
       }),
     });
 
@@ -56,10 +47,10 @@ class GlosariumController {
 
       const body = req.body;
 
-      const { error } = updateGlosariumSchema.validate(body);
+      const { error } = updateCategorySchema.validate(body);
       if (!!error) throw error.message;
 
-      const glosariums = await GlosariumRepository.updateGlosarium(
+      const glosariums = await CategoryRepository.updateCategory(
         parseInt(id),
         body
       );
@@ -74,7 +65,7 @@ class GlosariumController {
     try {
       const { offset, limit, term } = req.query;
 
-      const glosariums = await GlosariumRepository.getGlosariums({
+      const glosariums = await CategoryRepository.getCategories({
         ...getDefaultOffsetAndLimit(offset as string, limit as string),
         term: term as string,
       });
@@ -90,7 +81,7 @@ class GlosariumController {
       const { id } = req.params;
       if (!id) throw `ID_NOT_PROVIDED`;
 
-      const glosariums = await GlosariumRepository.getGlosariumById(
+      const glosariums = await CategoryRepository.getCategoryById(
         parseInt(id as string)
       );
 
@@ -107,7 +98,7 @@ class GlosariumController {
 
       if (!id) throw `ID_NOT_PROVIDED`;
 
-      const glosariums = await GlosariumRepository.deleteGlosariumById(
+      const glosariums = await CategoryRepository.deleteCategoryById(
         parseInt(id as string)
       );
 
@@ -119,4 +110,4 @@ class GlosariumController {
   }
 }
 
-export default GlosariumController;
+export default CategoryController;

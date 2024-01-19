@@ -62,18 +62,42 @@ model Category {
   updatedAt DateTime @updatedAt
 }
 
+model Writer {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Book      Book[]
+}
+
+model Publisher {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Book      Book[]
+}
+
 model Book {
-  id          Int      @id @default(autoincrement())
-  title       String   @unique
-  publisher   String
-  writer      String
-  cateogryId  Int
-  category    Category @relation(fields: [cateogryId], references: [id])
+  id    Int    @id @default(autoincrement())
+  title String @unique
+
+  publisherId Int
+  publisher   Publisher @relation(fields: [publisherId], references: [id])
+
+  writerId Int
+  writer   Writer @relation(fields: [writerId], references: [id])
+
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id])
+
   synopsis    String
   pageAmt     Int
   releaseDate DateTime @db.Date
   coverImage  String
-  bookUrl     String
+  bookName    String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
