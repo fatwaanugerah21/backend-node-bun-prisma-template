@@ -3,6 +3,7 @@ import DatabaseLib from "../libs/database.lib";
 import { TFetchAllParams } from "../types/indexType";
 import WriterRepository from "./writer.repository";
 import PublisherRepository from "./publisher.repository";
+import UserReadRepository from "./user-read.repository";
 
 export interface TCreateBookBody {
   title: string;
@@ -31,9 +32,13 @@ export interface TUpdateBookBody {
 export type TGetBooksParams = {
   term?: string;
 };
+export type TGetContinueReadingBooksParams = {
+  term?: string;
+  userId?: number;
+};
 
 class BookRepository {
-  static bookSelect: Prisma.BookSelect = {
+  static bookGeneralSelect: Prisma.BookSelect = {
     id: true,
     title: true,
     bookName: true,
@@ -89,6 +94,51 @@ class BookRepository {
     }
   }
 
+  static async getContinueReadingBooks({
+    limit,
+    offset,
+    term,
+    userId,
+  }: TGetContinueReadingBooksParams & TFetchAllParams) {
+    try {
+      const resp = await DatabaseLib.models.book.findMany({
+        skip: offset,
+        take: limit,
+        select: {
+          ...this.bookGeneralSelect,
+          UserRead: {
+            select: UserReadRepository.userReadSelect,
+          },
+        },
+        where: {
+          title: { contains: term?.toLowerCase() },
+          synopsis: { contains: term?.toLowerCase() },
+          UserRead: {
+            some: {
+              userId,
+            },
+          },
+        },
+      });
+
+      const books = resp.map(({ UserRead, publisher, writer, ...book }) => {
+        const ur = UserRead[0];
+        return {
+          ...book,
+          publisher: publisher.name,
+          writer: writer.name,
+          currentPage: ur.currentPage,
+          lastOpened: ur.updatedAt || ur.createdAt,
+        };
+      });
+
+      return books;
+    } catch (error) {
+      console.log("Error on service: ", error);
+      throw error;
+    }
+  }
+
   static async getBooks({
     limit,
     offset,
@@ -98,31 +148,74 @@ class BookRepository {
       const resp = await DatabaseLib.models.book.findMany({
         skip: offset,
         take: limit,
-        select: this.bookSelect,
+        select: {
+          ...this.bookGeneralSelect,
+        },
         where: {
           title: { contains: term?.toLowerCase() },
           synopsis: { contains: term?.toLowerCase() },
         },
       });
 
-      return resp;
+      const books = resp.map(({ publisher, writer, ...book }) => {
+        return {
+          ...book,
+          publisher: publisher.name,
+          writer: writer.name,
+        };
+      });
+
+      return books;
     } catch (error) {
       console.log("Error on service: ", error);
       throw error;
     }
   }
 
-  static async getBookById(id: number) {
+  static async checkBookExist(id: number) {
     try {
-      const resp = await DatabaseLib.models.book.findFirst({
+      const resp = await DatabaseLib.models.book.count({
         where: {
           id,
         },
       });
 
-      if (!resp) throw `404|GLOSARIUM_NOT_FOUND`;
+      return !!resp;
+    } catch (error) {
+      console.log("Error on service: ", error);
+      throw error;
+    }
+  }
 
-      return resp;
+  static async getBookById(id: number, userId?: number) {
+    try {
+      const resp = await DatabaseLib.models.book.findFirst({
+        select: {
+          ...this.bookGeneralSelect,
+          UserRead: { select: UserReadRepository.userReadSelect },
+        },
+        where: {
+          id,
+          UserRead: {
+            some: {
+              userId,
+            },
+          },
+        },
+      });
+
+      if (!resp) throw `404|BOOK_NOT_FOUND`;
+
+      const { publisher, UserRead, writer, ...restBook } = resp;
+      const ur = UserRead[0];
+      const book = {
+        ...restBook,
+        currentPage: ur.currentPage,
+        lastOpened: ur.updatedAt || ur.createdAt,
+        publisher: resp.publisher.name,
+        writer: resp.writer.name,
+      };
+      return book;
     } catch (error) {
       console.log("Error on service: ", error);
       throw error;

@@ -22,6 +22,21 @@ class UserRepository {
     role: true,
   };
 
+  static async checkUserExist(id: number) {
+    try {
+      const resp = await DatabaseLib.models.user.count({
+        where: {
+          id,
+        },
+      });
+
+      return !!resp;
+    } catch (error) {
+      console.log("Error on service: ", error);
+      throw error;
+    }
+  }
+
   static async createUser(data: TCreateUserBody) {
     try {
       const resp = await DatabaseLib.models.user.create({

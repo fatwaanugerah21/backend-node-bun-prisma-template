@@ -13,6 +13,12 @@ class BookRoute {
       IOLib.uploadArrayMiddleware("files"),
       BookController.create
     );
+    this.router.get(
+      "/continue-reading",
+      AuthMiddleware.mustLogin,
+      AuthMiddleware.validateId("query", "userId"),
+      BookController.getContinueReading
+    );
     this.router.get("/", BookController.getAll);
     this.router.get("/:id", BookController.getById);
     this.router.put(

@@ -5,7 +5,10 @@ import BookRepository, {
   TCreateBookBody,
   TUpdateBookBody,
 } from "../repositories/book.repository";
-import { getDefaultStartAndOffset as getDefaultOffsetAndLimit } from "../utils/functions.util";
+import {
+  getDefaultStartAndOffset as getDefaultOffsetAndLimit,
+  getUserIdFromRequest,
+} from "../utils/functions.util";
 import PublisherRepository from "../repositories/publisher.repository";
 import WriterRepository from "../repositories/writer.repository";
 import { File } from "buffer";
@@ -228,12 +231,41 @@ class BookController {
     }
   }
 
+  static async getContinueReading(req: Request, resp: Response) {
+    try {
+      const { offset, limit, term, userId } = req.query;
+
+      if (!userId) throw "400|NO_USER_ID_PROVIDED_ERROR";
+
+      const books = await BookRepository.getContinueReadingBooks({
+        ...getDefaultOffsetAndLimit(offset as string, limit as string),
+        term: term as string,
+        userId: parseInt(userId as string),
+      });
+
+      const formattedBooks = books.map((book) => ({
+        ...book,
+        coverImage: `${process.env.BACKEND_URL}/files/${book.coverImage}`,
+        bookUrl: `${process.env.BACKEND_URL}/files/${book.bookName}`,
+      }));
+      resp.json(successResponse(formattedBooks));
+    } catch (error) {
+      console.error(error);
+      resp.json(errorResponse(error + ""));
+    }
+  }
+
   static async getById(req: Request, resp: Response) {
     try {
       const { id } = req.params;
       if (!id) throw `ID_NOT_PROVIDED`;
 
-      const book = await BookRepository.getBookById(parseInt(id as string));
+      const { userId } = req.query;
+
+      const book = await BookRepository.getBookById(
+        parseInt(id as string),
+        parseInt(userId + "")
+      );
       const formattedBook = {
         ...book,
         coverImage: `${process.env.BACKEND_URL}/files/${book.coverImage}`,

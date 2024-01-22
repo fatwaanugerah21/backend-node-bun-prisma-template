@@ -38,9 +38,11 @@ model User {
   role        UserRole
   questions   Question[]
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  Comment   Comment[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Comment    Comment[]
+  UserRead   UserRead[]
+  UserCourse UserCourse[]
 }
 
 model Glosarium {
@@ -99,8 +101,9 @@ model Book {
   coverImage  String
   bookName    String
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  UserRead  UserRead[]
 }
 
 model Question {
@@ -115,6 +118,34 @@ model Question {
   categoryId  Int
   category    Category       @relation(fields: [categoryId], references: [id])
   comment     Comment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserRead {
+  id          Int @id @default(autoincrement())
+  currentPage Int @default(0)
+
+  bookId Int
+  book   Book @relation(fields: [bookId], references: [id])
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserCourse {
+  id             Int @id @default(autoincrement())
+  sequenceNumber Int @default(0)
+
+  courseId Int
+  course   Course @relation(fields: [courseId], references: [id])
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -139,6 +170,7 @@ model Course {
   description String @db.LongText
 
   Curriculum Curriculum[]
+  UserCourse UserCourse[]
 }
 
 model Curriculum {

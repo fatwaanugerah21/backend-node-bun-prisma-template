@@ -1,3 +1,6 @@
+import { Request } from "express";
+import { SIGNED_IN_USER_REQ_KEY } from "../constants/constants";
+import { TJwtPayload } from "../libs/jwt.lib";
 import { TFetchAllParams } from "../types/indexType";
 
 export function getDefaultStartAndOffset(
@@ -27,4 +30,8 @@ export function isParseableInteger(str: string) {
 
   // Check if the parsed value is a valid integer
   return Number.isInteger(parsedValue);
+}
+
+export function getUserIdFromRequest(req: Request): TJwtPayload {
+  return (req as any)[SIGNED_IN_USER_REQ_KEY];
 }
