@@ -35,3 +35,7 @@ export function isParseableInteger(str: string) {
 export function getUserIdFromRequest(req: Request): TJwtPayload {
   return (req as any)[SIGNED_IN_USER_REQ_KEY];
 }
+
+export function getFileUrl(filename: string): string {
+  return `${process.env.BACKEND_URL}/files/${filename}`;
+}

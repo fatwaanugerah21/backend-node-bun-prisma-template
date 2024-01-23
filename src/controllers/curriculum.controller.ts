@@ -1,28 +1,34 @@
 import { Request, Response } from "express";
 import { errorResponse, successResponse } from "../utils/responses.util";
 import Joi from "joi";
-import CategoryRepository, {
-  TCreateCategoryBody,
-} from "../repositories/category.repository";
+import CurriculumRepository, {
+  TCreateCurriculumBody,
+} from "../repositories/curriculum.repository";
 import { getDefaultStartAndOffset as getDefaultOffsetAndLimit } from "../utils/functions.util";
 
-class CategoryController {
+class CurriculumController {
   static async create(req: Request, resp: Response) {
-    const createCategorySchema = Joi.object<TCreateCategoryBody>({
-      name: Joi.string().required().messages({
+    const createCurriculumSchema = Joi.object<TCreateCurriculumBody>({
+      title: Joi.string().required().messages({
         "any.required": "NO_TITLE_ERROR",
-        "string.base": "NAME_MUST_BE_STRING",
+        "string.base": "TITLE_MUST_BE_STRING",
+      }),
+      courseId: Joi.number().required().messages({
+        "any.required": "NO_COURSE_ID_ERROR",
+        "number.base": "COURSE_ID_MUST_BE_NUMBER",
       }),
     });
 
     try {
       const body = req.body;
 
-      const { error } = createCategorySchema.validate(body);
+      console.log("Body: ", body);
+
+      const { error } = createCurriculumSchema.validate(body);
       if (!!error) throw error.message;
 
-      const categories = await CategoryRepository.createCategory(body);
-      resp.json(successResponse(categories));
+      const curriculums = await CurriculumRepository.createCurriculum(body);
+      resp.json(successResponse(curriculums));
     } catch (error) {
       console.error(error);
       resp.json(errorResponse(error + ""));
@@ -30,9 +36,12 @@ class CategoryController {
   }
 
   static async update(req: Request, resp: Response) {
-    const updateCategorySchema = Joi.object<TCreateCategoryBody>({
-      name: Joi.string().messages({
+    const updateCurriculumSchema = Joi.object<TCreateCurriculumBody>({
+      title: Joi.string().messages({
         "string.base": "NAME_MUST_BE_STRING",
+      }),
+      courseId: Joi.string().messages({
+        "any.required": "NO_COURSE_ID_ERROR",
       }),
     });
 
@@ -43,14 +52,14 @@ class CategoryController {
 
       const body = req.body;
 
-      const { error } = updateCategorySchema.validate(body);
+      const { error } = updateCurriculumSchema.validate(body);
       if (!!error) throw error.message;
 
-      const categories = await CategoryRepository.updateCategory(
+      const curriculums = await CurriculumRepository.updateCurriculum(
         parseInt(id),
         body
       );
-      resp.json(successResponse(categories));
+      resp.json(successResponse(curriculums));
     } catch (error) {
       console.error(error);
       resp.json(errorResponse(error + ""));
@@ -61,11 +70,11 @@ class CategoryController {
     try {
       const { offset, limit, term } = req.query;
 
-      const categories = await CategoryRepository.getCategories({
+      const curriculums = await CurriculumRepository.getCurriculums({
         ...getDefaultOffsetAndLimit(offset as string, limit as string),
         term: term as string,
       });
-      resp.json(successResponse(categories));
+      resp.json(successResponse(curriculums));
     } catch (error) {
       console.error(error);
       resp.json(errorResponse(error + ""));
@@ -77,11 +86,11 @@ class CategoryController {
       const { id } = req.params;
       if (!id) throw `ID_NOT_PROVIDED`;
 
-      const categories = await CategoryRepository.getCategoryById(
+      const curriculums = await CurriculumRepository.getCurriculumById(
         parseInt(id as string)
       );
 
-      resp.json(successResponse(categories));
+      resp.json(successResponse(curriculums));
     } catch (error) {
       console.error(error);
       resp.json(errorResponse(error + ""));
@@ -94,11 +103,11 @@ class CategoryController {
 
       if (!id) throw `ID_NOT_PROVIDED`;
 
-      const categories = await CategoryRepository.deleteCategoryById(
+      const curriculums = await CurriculumRepository.deleteCurriculumById(
         parseInt(id as string)
       );
 
-      resp.json(successResponse(categories));
+      resp.json(successResponse(curriculums));
     } catch (error) {
       console.error(error);
       resp.json(errorResponse(error + ""));
@@ -106,4 +115,4 @@ class CategoryController {
   }
 }
 
-export default CategoryController;
+export default CurriculumController;

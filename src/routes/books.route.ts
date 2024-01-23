@@ -16,7 +16,6 @@ class BookRoute {
     this.router.get(
       "/continue-reading",
       AuthMiddleware.mustLogin,
-      AuthMiddleware.validateId("query", "userId"),
       BookController.getContinueReading
     );
     this.router.get("/", BookController.getAll);

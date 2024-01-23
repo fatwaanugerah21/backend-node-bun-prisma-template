@@ -1,28 +1,37 @@
 import { Request, Response } from "express";
 import { errorResponse, successResponse } from "../utils/responses.util";
 import Joi from "joi";
-import CategoryRepository, {
-  TCreateCategoryBody,
-} from "../repositories/category.repository";
+import CourseRepository, {
+  TCreateCourseBody,
+  TUpdateCourseBody,
+} from "../repositories/course.repository";
 import { getDefaultStartAndOffset as getDefaultOffsetAndLimit } from "../utils/functions.util";
 
-class CategoryController {
+class CourseController {
   static async create(req: Request, resp: Response) {
-    const createCategorySchema = Joi.object<TCreateCategoryBody>({
-      name: Joi.string().required().messages({
+    const createCourseSchema = Joi.object<TCreateCourseBody>({
+      title: Joi.string().required().messages({
         "any.required": "NO_TITLE_ERROR",
+        "string.base": "NAME_MUST_BE_STRING",
+      }),
+      description: Joi.string().required().messages({
+        "any.required": "NO_DESCRIPTION_ERROR",
         "string.base": "NAME_MUST_BE_STRING",
       }),
     });
 
     try {
-      const body = req.body;
+      const body = req.body as TCreateCourseBody;
+      const file = req.file;
 
-      const { error } = createCategorySchema.validate(body);
+      const { error } = createCourseSchema.validate(body);
       if (!!error) throw error.message;
+      if (!file) throw "400|NO_COVER_IMAGE_ERROR";
 
-      const categories = await CategoryRepository.createCategory(body);
-      resp.json(successResponse(categories));
+      body.coverImg = file?.filename!;
+
+      const courses = await CourseRepository.createCourse(body);
+      resp.json(successResponse(courses));
     } catch (error) {
       console.error(error);
       resp.json(errorResponse(error + ""));
@@ -30,27 +39,33 @@ class CategoryController {
   }
 
   static async update(req: Request, resp: Response) {
-    const updateCategorySchema = Joi.object<TCreateCategoryBody>({
-      name: Joi.string().messages({
+    const updateCourseSchema = Joi.object<TCreateCourseBody>({
+      title: Joi.string().messages({
+        "string.base": "NAME_MUST_BE_STRING",
+      }),
+      description: Joi.string().messages({
         "string.base": "NAME_MUST_BE_STRING",
       }),
     });
 
     try {
       const { id } = req.params;
+      const body = req.body as TUpdateCourseBody;
+      const file = req.file;
 
-      if (!id) throw `ID_NOT_PROVIDED`;
+      if (!id) throw "404|COURSE_NOT_FOUND";
 
-      const body = req.body;
-
-      const { error } = updateCategorySchema.validate(body);
+      const { error } = updateCourseSchema.validate(body);
       if (!!error) throw error.message;
+      if (!!file) {
+        body.coverImg = file?.filename!;
+      }
 
-      const categories = await CategoryRepository.updateCategory(
-        parseInt(id),
+      const courses = await CourseRepository.updateCourse(
+        parseInt(id + ""),
         body
       );
-      resp.json(successResponse(categories));
+      resp.json(successResponse(courses));
     } catch (error) {
       console.error(error);
       resp.json(errorResponse(error + ""));
@@ -61,11 +76,11 @@ class CategoryController {
     try {
       const { offset, limit, term } = req.query;
 
-      const categories = await CategoryRepository.getCategories({
+      const courses = await CourseRepository.getCourses({
         ...getDefaultOffsetAndLimit(offset as string, limit as string),
         term: term as string,
       });
-      resp.json(successResponse(categories));
+      resp.json(successResponse(courses));
     } catch (error) {
       console.error(error);
       resp.json(errorResponse(error + ""));
@@ -77,11 +92,11 @@ class CategoryController {
       const { id } = req.params;
       if (!id) throw `ID_NOT_PROVIDED`;
 
-      const categories = await CategoryRepository.getCategoryById(
+      const courses = await CourseRepository.getCourseById(
         parseInt(id as string)
       );
 
-      resp.json(successResponse(categories));
+      resp.json(successResponse(courses));
     } catch (error) {
       console.error(error);
       resp.json(errorResponse(error + ""));
@@ -94,11 +109,11 @@ class CategoryController {
 
       if (!id) throw `ID_NOT_PROVIDED`;
 
-      const categories = await CategoryRepository.deleteCategoryById(
+      const courses = await CourseRepository.deleteCourseById(
         parseInt(id as string)
       );
 
-      resp.json(successResponse(categories));
+      resp.json(successResponse(courses));
     } catch (error) {
       console.error(error);
       resp.json(errorResponse(error + ""));
@@ -106,4 +121,4 @@ class CategoryController {
   }
 }
 
-export default CategoryController;
+export default CourseController;

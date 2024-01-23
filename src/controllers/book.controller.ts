@@ -7,6 +7,7 @@ import BookRepository, {
 } from "../repositories/book.repository";
 import {
   getDefaultStartAndOffset as getDefaultOffsetAndLimit,
+  getFileUrl,
   getUserIdFromRequest,
 } from "../utils/functions.util";
 import PublisherRepository from "../repositories/publisher.repository";
@@ -221,8 +222,8 @@ class BookController {
 
       const formattedBooks = books.map((book) => ({
         ...book,
-        coverImage: `${process.env.BACKEND_URL}/files/${book.coverImage}`,
-        bookUrl: `${process.env.BACKEND_URL}/files/${book.bookName}`,
+        coverImage: getFileUrl(book.coverImage),
+        bookUrl: getFileUrl(book.bookName),
       }));
       resp.json(successResponse(formattedBooks));
     } catch (error) {
@@ -245,8 +246,8 @@ class BookController {
 
       const formattedBooks = books.map((book) => ({
         ...book,
-        coverImage: `${process.env.BACKEND_URL}/files/${book.coverImage}`,
-        bookUrl: `${process.env.BACKEND_URL}/files/${book.bookName}`,
+        coverImage: getFileUrl(book.coverImage),
+        bookUrl: getFileUrl(book.bookName),
       }));
       resp.json(successResponse(formattedBooks));
     } catch (error) {
@@ -268,8 +269,8 @@ class BookController {
       );
       const formattedBook = {
         ...book,
-        coverImage: `${process.env.BACKEND_URL}/files/${book.coverImage}`,
-        bookUrl: `${process.env.BACKEND_URL}/files/${book.bookName}`,
+        coverImage: getFileUrl(book.coverImage),
+        bookUrl: getFileUrl(book.bookName),
       };
       resp.json(successResponse(formattedBook));
     } catch (error) {

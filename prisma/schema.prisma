@@ -38,11 +38,11 @@ model User {
   role        UserRole
   questions   Question[]
 
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  Comment    Comment[]
-  UserRead   UserRead[]
-  UserCourse UserCourse[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  comments    Comment[]
+  userReads   UserRead[]
+  userCourses UserCourse[]
 }
 
 model Glosarium {
@@ -70,7 +70,7 @@ model Writer {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Book      Book[]
+  books     Book[]
 }
 
 model Publisher {
@@ -79,7 +79,7 @@ model Publisher {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Book      Book[]
+  books     Book[]
 }
 
 model Book {
@@ -117,7 +117,7 @@ model Question {
   handlerId   Int?
   categoryId  Int
   category    Category       @relation(fields: [categoryId], references: [id])
-  comment     Comment[]
+  comments    Comment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -169,16 +169,17 @@ model Course {
   coverImg    String
   description String @db.LongText
 
-  Curriculum Curriculum[]
-  UserCourse UserCourse[]
+  curriculums Curriculum[]
+  userCourses UserCourse[]
 }
 
 model Curriculum {
-  id       Int    @id @default(autoincrement())
-  title    String
-  courseId Int
+  id    Int    @id @default(autoincrement())
+  title String
 
-  course   Course    @relation(fields: [courseId], references: [id])
+  courseId Int
+  course   Course @relation(fields: [courseId], references: [id])
+
   articles Article[]
   quizzes  Quiz[]
 }
@@ -223,5 +224,5 @@ model QuizQuestionOptions {
   title String
 
   quizQuestionId Int
-  QuizQuestion   QuizQuestion @relation(fields: [quizQuestionId], references: [id])
+  quizQuestion   QuizQuestion @relation(fields: [quizQuestionId], references: [id])
 }

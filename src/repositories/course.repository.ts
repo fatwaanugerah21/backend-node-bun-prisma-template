@@ -1,26 +1,35 @@
 import { Prisma } from "@prisma/client";
 import DatabaseLib from "../libs/database.lib";
 import { TFetchAllParams } from "../types/indexType";
+import { getFileUrl } from "../utils/functions.util";
+import CurriculumRepository from "./curriculum.repository";
 
-export type TCreateGlosariumBody = {
+export type TCreateCourseBody = {
+  coverImg: string;
   title: string;
   description: string;
 };
+export type TUpdateCourseBody = {
+  coverImg?: string;
+  title?: string;
+  description?: string;
+};
 
-export type TGetGlossariumsParams = {
+export type TGetCoursesParams = {
   term?: string;
 };
 
-class GlosariumRepository {
-  static glosariumSelect: Prisma.GlosariumSelect = {
+class CourseRepository {
+  static courseSelect: Prisma.CourseSelect = {
     id: true,
     title: true,
     description: true,
+    coverImg: true,
   };
 
-  static async createGlosarium(data: TCreateGlosariumBody) {
+  static async createCourse(data: TCreateCourseBody) {
     try {
-      const resp = await DatabaseLib.models.glosarium.create({
+      const resp = await DatabaseLib.models.course.create({
         data,
       });
 
@@ -31,9 +40,9 @@ class GlosariumRepository {
     }
   }
 
-  static async updateGlosarium(id: number, data: TCreateGlosariumBody) {
+  static async updateCourse(id: number, data: TUpdateCourseBody) {
     try {
-      const resp = await DatabaseLib.models.glosarium.update({
+      const resp = await DatabaseLib.models.course.update({
         where: { id },
         data,
       });
@@ -45,9 +54,9 @@ class GlosariumRepository {
     }
   }
 
-  static async deleteGlosariumById(id: number) {
+  static async deleteCourseById(id: number) {
     try {
-      const resp = await DatabaseLib.models.glosarium.delete({
+      const resp = await DatabaseLib.models.course.delete({
         where: { id },
       });
 
@@ -58,42 +67,53 @@ class GlosariumRepository {
     }
   }
 
-  static async getGlosariums({
+  static async getCourses({
     limit,
     offset,
     term,
-  }: TGetGlossariumsParams & TFetchAllParams) {
-    console.log("term: ", term);
-
+  }: TGetCoursesParams & TFetchAllParams) {
     try {
-      const resp = await DatabaseLib.models.glosarium.findMany({
+      const resp = await DatabaseLib.models.course.findMany({
         skip: offset,
         take: limit,
-        select: this.glosariumSelect,
+        select: this.courseSelect,
         where: {
           title: { contains: term?.toLowerCase() },
           description: { contains: term?.toLowerCase() },
         },
       });
 
-      return resp;
+      const courses = resp.map((course) => ({
+        ...course,
+        coverImg: `${getFileUrl(course.coverImg)}`,
+      }));
+
+      return courses;
     } catch (error) {
       console.log("Error on service: ", error);
       throw error;
     }
   }
 
-  static async getGlosariumById(id: number) {
+  static async getCourseById(id: number) {
     try {
-      const resp = await DatabaseLib.models.glosarium.findFirst({
+      const resp = await DatabaseLib.models.course.findFirst({
         where: {
           id,
         },
+        select: {
+          ...this.courseSelect,
+          curriculums: { select: CurriculumRepository.curriculumSelect },
+        },
       });
 
-      if (!resp) throw `404|GLOSARIUM_NOT_FOUND`;
+      if (!resp) throw `404|COURSE_NOT_FOUND`;
 
-      return resp;
+      const course = {
+        ...resp,
+        coverImg: getFileUrl(resp.coverImg),
+      };
+      return course;
     } catch (error) {
       console.log("Error on service: ", error);
       throw error;
@@ -101,4 +121,4 @@ class GlosariumRepository {
   }
 }
 
-export default GlosariumRepository;
+export default CourseRepository;
