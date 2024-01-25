@@ -17,6 +17,8 @@ import IOLib from "./src/libs/io.lib";
 import UserReadRoute from "./src/routes/user-read.route";
 import CourseRoute from "./src/routes/course.route";
 import CurriculumRoute from "./src/routes/curriculum.route";
+import ArticleRoute from "./src/routes/article.route";
+import QuizRoute from "./src/routes/quiz.route";
 
 class App {
   public app: Application;
@@ -68,6 +70,8 @@ class App {
     this.app.use("/user-reads", UserReadRoute.routes());
     this.app.use("/courses", CourseRoute.routes());
     this.app.use("/curriculums", CurriculumRoute.routes());
+    this.app.use("/articles", ArticleRoute.routes());
+    this.app.use("/quizes", QuizRoute.routes());
 
     this.app.use("/files", IOLib.routes());
 

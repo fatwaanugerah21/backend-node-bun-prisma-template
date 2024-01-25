@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { CurriculumSequenceType, Prisma } from "@prisma/client";
 import DatabaseLib from "../libs/database.lib";
 import { TFetchAllParams } from "../types/indexType";
 
@@ -16,11 +16,172 @@ export type TGetCurriculumsParams = {
   term?: string;
 };
 
+export type TCreateCurriculumSequenceParams = {
+  curriculumId: number;
+  type: CurriculumSequenceType;
+  sequenceNumber: number;
+  articleId?: number;
+  quizId?: number;
+};
 class CurriculumRepository {
   static curriculumSelect: Prisma.CurriculumSelect = {
     id: true,
     title: true,
   };
+
+  static curriculumSequenceSelect: Prisma.CurriculumSequenceSelect = {
+    id: true,
+    sequenceNumber: true,
+    type: true,
+  };
+
+  static async createCurriculumSequence({
+    articleId,
+    type,
+    curriculumId,
+    quizId,
+    sequenceNumber,
+  }: TCreateCurriculumSequenceParams) {
+    try {
+      console.log(
+        `{
+        sequenceNumber,
+        type,
+        curriculumId,
+        articleId,
+        quizId,
+      }: `,
+        {
+          sequenceNumber,
+          type,
+          curriculumId,
+          articleId,
+          quizId,
+        }
+      );
+
+      const curriculumSequence =
+        await DatabaseLib.models.curriculumSequence.create({
+          data: {
+            sequenceNumber,
+            type,
+            curriculumId,
+            articleId,
+            quizId,
+          },
+        });
+
+      return curriculumSequence;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  static async getAllCurriculumSequences(curriculumId: number) {
+    const curriculum = await DatabaseLib.models.curriculum.findFirst({
+      where: { id: curriculumId },
+      select: {
+        curriculumSequences: {
+          select: this.curriculumSequenceSelect,
+          orderBy: {
+            curriculumId: "asc",
+          },
+        },
+      },
+    });
+
+    return curriculum?.curriculumSequences;
+  }
+
+  static async deleteCurriculumSequenceOfArticle(
+    curriculumId: number,
+    articleId: number
+  ) {
+    try {
+      const curriculumSequence =
+        await DatabaseLib.models.curriculumSequence.findFirst({
+          where: {
+            curriculumId,
+            articleId,
+          },
+        });
+
+      const value = await DatabaseLib.models.curriculumSequence.delete({
+        where: {
+          id: curriculumSequence?.id,
+        },
+      });
+      console.log("Value: ", value);
+
+      return curriculumSequence;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  static async deleteCurriculumSequenceOfQuiz(
+    curriculumId: number,
+    quizId: number
+  ) {
+    try {
+      const curriculumSequence =
+        await DatabaseLib.models.curriculumSequence.findFirst({
+          where: {
+            curriculumId,
+            quizId,
+          },
+        });
+
+      await DatabaseLib.models.curriculumSequence.delete({
+        where: {
+          id: curriculumSequence?.id,
+        },
+      });
+
+      return curriculumSequence;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  static async decreaseAllCurriculumSequencesNumberAfterThisSeq(
+    curriculumId: number,
+    sequence: number
+  ) {
+    try {
+      const curriculum = await DatabaseLib.models.curriculum.findFirst({
+        where: { id: curriculumId },
+        select: {
+          curriculumSequences: {
+            select: this.curriculumSequenceSelect,
+            where: {
+              sequenceNumber: {
+                gt: sequence,
+              },
+            },
+          },
+        },
+      });
+
+      curriculum?.curriculumSequences.forEach(async (cs) => {
+        const newSeqNumber = cs.sequenceNumber - 1;
+        await DatabaseLib.models.curriculumSequence.update({
+          where: { id: cs.id },
+          data: {
+            sequenceNumber: newSeqNumber,
+          },
+        });
+      });
+
+      return curriculum;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
 
   static async createCurriculum(data: TCreateCurriculumBody) {
     try {

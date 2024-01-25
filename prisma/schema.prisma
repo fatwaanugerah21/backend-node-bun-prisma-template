@@ -178,34 +178,58 @@ model Curriculum {
   title String
 
   courseId Int
-  course   Course @relation(fields: [courseId], references: [id])
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  curriculumSequences CurriculumSequence[]
 
   articles Article[]
   quizzes  Quiz[]
 }
 
-model Article {
-  id             Int    @id @default(autoincrement())
-  title          String
-  material       String @db.LongText
+enum CurriculumSequenceType {
+  QUIZ
+  ARTICLE
+}
+
+model CurriculumSequence {
+  id             Int                    @id @default(autoincrement())
+  type           CurriculumSequenceType
   sequenceNumber Int
-  duration       Int // This is always in minutes
 
   curriculumId Int
-  curriculum   Curriculum @relation(fields: [curriculumId], references: [id])
+  curriculum   Curriculum @relation(fields: [curriculumId], references: [id], onDelete: Cascade)
+
+  articleId Int?
+  article   Article? @relation(fields: [articleId], references: [id])
+
+  quizId Int?
+  quiz   Quiz? @relation(fields: [quizId], references: [id])
+}
+
+model Article {
+  id       Int    @id @default(autoincrement())
+  title    String
+  material String @db.LongText
+  duration Int // This is always in minutes
+
+  curriculumSequences CurriculumSequence[]
+
+  curriculumId Int
+  curriculum   Curriculum @relation(fields: [curriculumId], references: [id], onDelete: Cascade)
 }
 
 model Quiz {
-  id                       Int    @id @default(autoincrement())
-  title                    String
-  material                 String @db.LongText
-  sequenceNumber           Int
-  duration                 Int // This is always in minutes
-  minimumCorrectnessToPass Int
+  id          Int    @id @default(autoincrement())
+  title       String
+  description String @db.LongText
+  duration    Int // This is always in minutes
 
-  curriculumId  Int
-  curriculum    Curriculum     @relation(fields: [curriculumId], references: [id])
+  curriculumId Int
+  curriculum   Curriculum @relation(fields: [curriculumId], references: [id], onDelete: Cascade)
+
   quizQuestions QuizQuestion[]
+
+  curriculumSequences CurriculumSequence[]
 }
 
 model QuizQuestion {
@@ -215,7 +239,7 @@ model QuizQuestion {
   correctOptionId Int
 
   quizId              Int
-  quiz                Quiz                  @relation(fields: [quizId], references: [id])
+  quiz                Quiz                  @relation(fields: [quizId], references: [id], onDelete: Cascade)
   quizQuestionOptions QuizQuestionOptions[]
 }
 
@@ -224,5 +248,5 @@ model QuizQuestionOptions {
   title String
 
   quizQuestionId Int
-  quizQuestion   QuizQuestion @relation(fields: [quizQuestionId], references: [id])
+  quizQuestion   QuizQuestion @relation(fields: [quizQuestionId], references: [id], onDelete: Cascade)
 }
