@@ -76,7 +76,7 @@ class ResponsiblerController {
 
       if (!id) throw `ID_NOT_PROVIDED`;
 
-      const district = await ResponsiblerRepository.getResponsiblerById(
+      const district = await ResponsiblerRepository.deleteResponsiblerById(
         parseInt(id as string)
       );
 
