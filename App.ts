@@ -8,17 +8,12 @@ import type {
   InterServerEvents,
   SocketData,
 } from "./src/types/indexType";
-import UserRoute from "./src/routes/user.route";
-import AuthRoute from "./src/routes/auth.route";
-import GlosariumRoute from "./src/routes/glosarium.route";
-import CategoryRoute from "./src/routes/categories.route";
-import BookRoute from "./src/routes/books.route";
 import IOLib from "./src/libs/io.lib";
-import UserReadRoute from "./src/routes/user-read.route";
-import CourseRoute from "./src/routes/course.route";
-import CurriculumRoute from "./src/routes/curriculum.route";
-import ArticleRoute from "./src/routes/article.route";
-import QuizRoute from "./src/routes/quiz.route";
+import DistrictRoute from "./src/routes/district.route";
+import SubdistrictRoute from "./src/routes/subdistrict.route";
+import VoterRoute from "./src/routes/voter.route";
+import ResponsiblerRoute from "./src/routes/responsibler.route";
+import ResponsiblerVoterRoute from "./src/routes/responsibler-voter.route";
 
 class App {
   public app: Application;
@@ -62,16 +57,11 @@ class App {
     `);
     });
 
-    this.app.use("/auth", AuthRoute.routes());
-    this.app.use("/users", UserRoute.routes());
-    this.app.use("/glosariums", GlosariumRoute.routes());
-    this.app.use("/categories", CategoryRoute.routes());
-    this.app.use("/books", BookRoute.routes());
-    this.app.use("/user-reads", UserReadRoute.routes());
-    this.app.use("/courses", CourseRoute.routes());
-    this.app.use("/curriculums", CurriculumRoute.routes());
-    this.app.use("/articles", ArticleRoute.routes());
-    this.app.use("/quizes", QuizRoute.routes());
+    this.app.use("/districts", DistrictRoute.routes());
+    this.app.use("/subDistricts", SubdistrictRoute.routes());
+    this.app.use("/voters", VoterRoute.routes());
+    this.app.use("/responsiblers", ResponsiblerRoute.routes());
+    this.app.use("/responsibler-voters", ResponsiblerVoterRoute.routes());
 
     this.app.use("/files", IOLib.routes());
 

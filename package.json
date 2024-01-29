@@ -22,7 +22,7 @@
   },
   "homepage": "https://gitlab.com/Ashaffah/express-typescript#readme",
   "dependencies": {
-    "@prisma/client": "^5.2.0",
+    "@prisma/client": "^5.8.1",
     "axios": "^1.6.3",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",

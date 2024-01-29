@@ -10,243 +10,77 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  ADMIN
-  STUDENT
-  TEACHER
+enum VoterGender {
+  L
+  P
 }
 
-enum QuestionStatus {
-  OPEN
-  ON_DISCUSSION
-  SOLVED
+enum VoterMarriageStatus {
+  B
+  S
 }
 
-enum QuestionType {
-  PRIVATE
-  GENERAL
-}
-
-model User {
-  id          Int        @id @default(autoincrement())
-  name        String
-  username    String     @unique
-  email       String     @unique
-  password    String
-  birthDate   DateTime   @db.Date
-  phoneNumber String
-  role        UserRole
-  questions   Question[]
-
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  comments    Comment[]
-  userReads   UserRead[]
-  userCourses UserCourse[]
-}
-
-model Glosarium {
-  id          Int    @id @default(autoincrement())
-  title       String @unique
-  description String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Category {
-  id        Int        @id @default(autoincrement())
-  name      String
-  books     Book[]
-  questions Question[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Writer {
+model District {
   id   Int    @id @default(autoincrement())
-  name String
+  name String @unique
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  books     Book[]
+  subdistricts Subdistrict[]
 }
 
-model Publisher {
+model Subdistrict {
   id   Int    @id @default(autoincrement())
-  name String
+  name String @unique
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  books     Book[]
+  districtName String
+  district     District @relation(fields: [districtName], references: [name], onDelete: Cascade)
 }
 
-model Book {
-  id    Int    @id @default(autoincrement())
-  title String @unique
+model Voter {
+  id Int @id @default(autoincrement())
 
-  publisherId Int
-  publisher   Publisher @relation(fields: [publisherId], references: [id])
+  districtName    String
+  subdistrictName String
 
-  writerId Int
-  writer   Writer @relation(fields: [writerId], references: [id])
+  familyCardNumber     String
+  individualCardNumber String
+  name                 String
+  birthPlace           String
+  birthDate            String
+  marriageStatus       String
+  gender               String
+  address              String
+  neighbourhood        String
+  hamlet               String
+  pollingPlaceNumber   String
 
-  categoryId Int
-  category   Category @relation(fields: [categoryId], references: [id])
-
-  synopsis    String
-  pageAmt     Int
-  releaseDate DateTime @db.Date
-  coverImage  String
-  bookName    String
-
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  UserRead  UserRead[]
+  responsiblerVoters ResponsiblerVoter[]
 }
 
-model Question {
-  id          Int            @id @default(autoincrement())
-  title       String
-  description String
-  status      QuestionStatus
-  type        QuestionType
-  askerId     Int
-  asker       User           @relation(fields: [askerId], references: [id])
-  handlerId   Int?
-  categoryId  Int
-  category    Category       @relation(fields: [categoryId], references: [id])
-  comments    Comment[]
+model Responsibler {
+  id Int @id @default(autoincrement())
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  isKip                Boolean @default(false)
+  districtName         String  @default("")
+  subdistrictName      String  @default("")
+  vottingPlaceNumber   String  @default("")
+  individualCardNumber String  @default("")
+  name                 String  @default("")
+  address              String  @default("")
+  status               String  @default("")
+  phoneNumber          String  @default("")
+  coordinatorName      String  @default("")
+
+  realVoter Int @default(0)
+
+  responsiblerVoters ResponsiblerVoter[]
 }
 
-model UserRead {
-  id          Int @id @default(autoincrement())
-  currentPage Int @default(0)
+model ResponsiblerVoter {
+  id Int @id @default(autoincrement())
 
-  bookId Int
-  book   Book @relation(fields: [bookId], references: [id])
+  voterId Int
+  voter   Voter @relation(fields: [voterId], references: [id])
 
-  userId Int
-  user   User @relation(fields: [userId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model UserCourse {
-  id             Int @id @default(autoincrement())
-  sequenceNumber Int @default(0)
-
-  courseId Int
-  course   Course @relation(fields: [courseId], references: [id])
-
-  userId Int
-  user   User @relation(fields: [userId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Comment {
-  id         Int      @id @default(autoincrement())
-  userId     Int
-  user       User     @relation(fields: [userId], references: [id])
-  questionId Int
-  question   Question @relation(fields: [questionId], references: [id])
-  text       String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Course {
-  id          Int    @id @default(autoincrement())
-  title       String
-  coverImg    String
-  description String @db.LongText
-
-  curriculums Curriculum[]
-  userCourses UserCourse[]
-}
-
-model Curriculum {
-  id    Int    @id @default(autoincrement())
-  title String
-
-  courseId Int
-  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-
-  curriculumSequences CurriculumSequence[]
-
-  articles Article[]
-  quizzes  Quiz[]
-}
-
-enum CurriculumSequenceType {
-  QUIZ
-  ARTICLE
-}
-
-model CurriculumSequence {
-  id             Int                    @id @default(autoincrement())
-  type           CurriculumSequenceType
-  sequenceNumber Int
-
-  curriculumId Int
-  curriculum   Curriculum @relation(fields: [curriculumId], references: [id], onDelete: Cascade)
-
-  articleId Int?
-  article   Article? @relation(fields: [articleId], references: [id])
-
-  quizId Int?
-  quiz   Quiz? @relation(fields: [quizId], references: [id])
-}
-
-model Article {
-  id       Int    @id @default(autoincrement())
-  title    String
-  material String @db.LongText
-  duration Int // This is always in minutes
-
-  curriculumSequences CurriculumSequence[]
-
-  curriculumId Int
-  curriculum   Curriculum @relation(fields: [curriculumId], references: [id], onDelete: Cascade)
-}
-
-model Quiz {
-  id          Int    @id @default(autoincrement())
-  title       String
-  description String @db.LongText
-  duration    Int // This is always in minutes
-
-  curriculumId Int
-  curriculum   Curriculum @relation(fields: [curriculumId], references: [id], onDelete: Cascade)
-
-  quizQuestions QuizQuestion[]
-
-  curriculumSequences CurriculumSequence[]
-}
-
-model QuizQuestion {
-  id              Int    @id @default(autoincrement())
-  title           String
-  questionNumber  Int
-  correctOptionId Int
-
-  quizId              Int
-  quiz                Quiz                  @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  quizQuestionOptions QuizQuestionOptions[]
-}
-
-model QuizQuestionOptions {
-  id    Int    @id @default(autoincrement())
-  title String
-
-  quizQuestionId Int
-  quizQuestion   QuizQuestion @relation(fields: [quizQuestionId], references: [id], onDelete: Cascade)
+  responsiblerId Int
+  responsibler   Responsibler @relation(fields: [responsiblerId], references: [id])
 }
