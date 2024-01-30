@@ -115,6 +115,11 @@ class ResponsiblerRepository {
         orderBy: {
           responsiblerVoters: { _count: "desc" },
         },
+        where: {
+          districtName,
+          subdistrictName,
+          vottingPlaceNumber: votingPlaceNumber,
+        },
         select: this.genSelect,
       });
 
