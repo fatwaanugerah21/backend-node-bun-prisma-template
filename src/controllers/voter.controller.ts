@@ -9,19 +9,7 @@ class VoterController {
     try {
       const body = req.body as { voters: TCreateVoterBody[] };
 
-      console.log("Posting: ", body.voters);
-
       const response = await VoterRepository.createVoters(body.voters);
-
-      console.log(
-        "*==================================================================================================*"
-      );
-
-      console.log("Response: ", response);
-
-      console.log(
-        "*==================================================================================================*"
-      );
 
       resp.json(successResponse(response));
     } catch (error) {
@@ -72,8 +60,6 @@ class VoterController {
       const district = await VoterRepository.getVoterById(
         parseInt(id as string)
       );
-
-      console.log("district: ", district);
 
       resp.json(successResponse(district));
     } catch (error) {

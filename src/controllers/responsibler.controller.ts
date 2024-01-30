@@ -80,8 +80,6 @@ class ResponsiblerController {
         parseInt(id as string)
       );
 
-      console.log("district: ", district);
-
       resp.json(successResponse(district));
     } catch (error) {
       console.error(error);
@@ -93,8 +91,6 @@ class ResponsiblerController {
   static async deleteAll(req: Request, resp: Response) {
     try {
       const district = await ResponsiblerRepository.deleteAllResponsiblers();
-
-      console.log("Deleted Responsibler: ", district);
 
       resp.json(successResponse(district));
     } catch (error) {

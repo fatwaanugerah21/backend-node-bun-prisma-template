@@ -53,8 +53,6 @@ class DistrictController {
         parseInt(id as string)
       );
 
-      console.log("district: ", district);
-
       resp.json(successResponse(district));
     } catch (error) {
       console.error(error);
