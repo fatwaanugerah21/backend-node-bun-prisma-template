@@ -14,6 +14,7 @@ import SubdistrictRoute from "./src/routes/subdistrict.route";
 import VoterRoute from "./src/routes/voter.route";
 import ResponsiblerRoute from "./src/routes/responsibler.route";
 import ResponsiblerVoterRoute from "./src/routes/responsibler-voter.route";
+import AuthRoute from "./src/routes/auth.route";
 
 class App {
   public app: Application;
@@ -62,6 +63,7 @@ class App {
     this.app.use("/voters", VoterRoute.routes());
     this.app.use("/responsiblers", ResponsiblerRoute.routes());
     this.app.use("/responsibler-voters", ResponsiblerVoterRoute.routes());
+    this.app.use("/passwords", AuthRoute.routes());
 
     this.app.use("/files", IOLib.routes());
 
