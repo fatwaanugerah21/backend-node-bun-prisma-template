@@ -117,8 +117,7 @@ class ResponsiblerRepository {
         },
         where: {
           districtName,
-          subdistrictName,
-          vottingPlaceNumber: votingPlaceNumber,
+          responsiblerVoters: { some: {} },
         },
         select: this.genSelect,
       });
