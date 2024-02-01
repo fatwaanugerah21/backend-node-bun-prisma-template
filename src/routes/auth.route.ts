@@ -5,8 +5,9 @@ class AuthRoute {
   static router = express.Router();
 
   static routes(): Router {
-    this.router.put("/", AuthController.setPassword);
-    this.router.get("/", AuthController.getPassword);
+    const authController = new AuthController();
+    this.router.put("/", authController.setPassword);
+    this.router.get("/", authController.getPassword);
 
     return this.router;
   }

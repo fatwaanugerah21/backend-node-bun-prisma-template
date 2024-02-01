@@ -1,21 +1,21 @@
 import { Request, Response } from "express";
 import { errorResponse, successResponse } from "../utils/responses.util";
 
+let pssd = "";
 class AuthController {
-  static password = "";
-  static async getPassword(req: Request, resp: Response) {
+  async getPassword(req: Request, resp: Response) {
     try {
-      resp.json(successResponse(this.password));
+      resp.json(successResponse(pssd));
     } catch (error) {
       console.error(error);
-      resp.json(errorResponse(this.password));
+      resp.json(errorResponse(pssd));
     }
   }
 
-  static async setPassword(req: Request, resp: Response) {
+  async setPassword(req: Request, resp: Response) {
     try {
       const { password } = req.query;
-      this.password = password as string;
+      pssd = password as string;
 
       resp.json(successResponse("Success changing password"));
     } catch (error) {
