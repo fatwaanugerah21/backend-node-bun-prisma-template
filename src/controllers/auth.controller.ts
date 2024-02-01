@@ -14,6 +14,9 @@ class AuthController {
 
   static async setPassword(req: Request, resp: Response) {
     try {
+      const { password } = req.query;
+      this.password = password as string;
+
       resp.json(successResponse("Success changing password"));
     } catch (error) {
       console.error(error);
