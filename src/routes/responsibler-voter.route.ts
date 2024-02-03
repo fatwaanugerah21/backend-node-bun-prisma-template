@@ -11,7 +11,7 @@ class ResponsiblerVoterRoute {
       ResponsiblerVoterController.getAllDuplicate
     );
     this.router.get(
-      "/with-responsibler-voters",
+      "/inputted-district-and-subdistrict",
       ResponsiblerVoterController.getInputtedDistrictAndSubdistricts
     );
     this.router.get("/", ResponsiblerVoterController.getAll);

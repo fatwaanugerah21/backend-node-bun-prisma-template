@@ -103,6 +103,7 @@ class ResponsiblerRepository {
 
   static async getResponsiblersWithResponsiblerVoters({
     districtName,
+    subdistrictName,
   }: {
     districtName: string;
     subdistrictName: string;
@@ -115,6 +116,7 @@ class ResponsiblerRepository {
         },
         where: {
           districtName,
+          subdistrictName,
           responsiblerVoters: { some: {} },
         },
         select: this.genSelect,
@@ -143,6 +145,7 @@ class ResponsiblerRepository {
         },
         where: {
           districtName,
+          subdistrictName,
         },
         select: this.genSelect,
       });

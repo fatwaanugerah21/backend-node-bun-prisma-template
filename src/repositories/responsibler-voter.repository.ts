@@ -106,7 +106,7 @@ class ResponsiblerVoterRepository {
         select: {
           id: true,
           responsibler: true,
-          voter: {},
+          voter: true,
         },
       });
 

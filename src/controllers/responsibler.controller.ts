@@ -59,11 +59,12 @@ class ResponsiblerController {
       const { districtName, subdistrictName, votingPlaceNumber }: any =
         req.query;
 
-      const responsiblers = await ResponsiblerRepository.getResponsiblers({
-        districtName,
-        subdistrictName,
-        votingPlaceNumber,
-      });
+      const responsiblers =
+        await ResponsiblerRepository.getResponsiblersWithResponsiblerVoters({
+          districtName,
+          subdistrictName,
+          votingPlaceNumber,
+        });
 
       resp.json(successResponse(responsiblers));
     } catch (error) {
