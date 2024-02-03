@@ -145,7 +145,6 @@ class ResponsiblerRepository {
         },
         where: {
           districtName,
-          subdistrictName,
         },
         select: this.genSelect,
       });
