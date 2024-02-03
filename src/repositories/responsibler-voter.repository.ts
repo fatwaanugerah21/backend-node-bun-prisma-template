@@ -75,6 +75,23 @@ class ResponsiblerVoterRepository {
     }
   }
 
+  static async getInputtedDistrictAndSubdistricts() {
+    try {
+      const distinctDistrictAndSubdistrictWithCount =
+        await DatabaseLib.models.voter.groupBy({
+          by: ["districtName", "subdistrictName"],
+          where: {
+            responsiblerVoters: { some: {} },
+          },
+        });
+
+      return distinctDistrictAndSubdistrictWithCount;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
   static async getResponsiblerVoters(responsiblerId: number) {
     try {
       const resp = await DatabaseLib.models.responsiblerVoter.findMany({

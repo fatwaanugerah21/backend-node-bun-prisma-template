@@ -54,6 +54,24 @@ class ResponsiblerController {
     }
   }
 
+  static async getAllWithResponsiblerVoters(req: Request, resp: Response) {
+    try {
+      const { districtName, subdistrictName, votingPlaceNumber }: any =
+        req.query;
+
+      const responsiblers = await ResponsiblerRepository.getResponsiblers({
+        districtName,
+        subdistrictName,
+        votingPlaceNumber,
+      });
+
+      resp.json(successResponse(responsiblers));
+    } catch (error) {
+      console.error(error);
+      resp.json(errorResponse(error + ""));
+    }
+  }
+
   static async getById(req: Request, resp: Response) {
     try {
       const { id } = req.params;

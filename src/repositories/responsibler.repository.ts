@@ -101,6 +101,32 @@ class ResponsiblerRepository {
     }
   }
 
+  static async getResponsiblersWithResponsiblerVoters({
+    districtName,
+  }: {
+    districtName: string;
+    subdistrictName: string;
+    votingPlaceNumber: string;
+  }) {
+    try {
+      const resp = await DatabaseLib.models.responsibler.findMany({
+        orderBy: {
+          responsiblerVoters: { _count: "desc" },
+        },
+        where: {
+          districtName,
+          responsiblerVoters: { some: {} },
+        },
+        select: this.genSelect,
+      });
+
+      return resp;
+    } catch (error) {
+      console.log("Error on service: ", error);
+      throw error;
+    }
+  }
+
   static async getResponsiblers({
     districtName,
     subdistrictName,

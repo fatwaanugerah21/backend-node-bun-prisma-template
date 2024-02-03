@@ -10,6 +10,11 @@ class ResponsiblerVoterRoute {
       "/all-duplicate",
       ResponsiblerVoterController.getAllDuplicate
     );
+    this.router.get(
+      "/with-responsibler-voters",
+      ResponsiblerVoterController.getInputtedDistrictAndSubdistricts
+    );
+    this.router.get("/", ResponsiblerVoterController.getAll);
     this.router.get("/", ResponsiblerVoterController.getAll);
     this.router.get("/:id", ResponsiblerVoterController.getById);
     this.router.delete("/:id", ResponsiblerVoterController.delete);

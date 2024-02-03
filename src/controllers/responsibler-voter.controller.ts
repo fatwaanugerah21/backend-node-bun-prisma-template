@@ -42,6 +42,21 @@ class ResponsiblerVoterController {
     }
   }
 
+  static async getInputtedDistrictAndSubdistricts(
+    req: Request,
+    resp: Response
+  ) {
+    try {
+      const districtAndSubdistrictWithCount =
+        await ResponsiblerVoterRepository.getInputtedDistrictAndSubdistricts();
+
+      resp.json(successResponse(districtAndSubdistrictWithCount));
+    } catch (error) {
+      console.error(error);
+      resp.json(errorResponse(error + ""));
+    }
+  }
+
   static async getById(req: Request, resp: Response) {
     try {
       const { id } = req.params;
