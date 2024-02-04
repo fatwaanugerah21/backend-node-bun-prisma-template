@@ -79,8 +79,8 @@ model ResponsiblerVoter {
   id Int @id @default(autoincrement())
 
   voterId Int
-  voter   Voter @relation(fields: [voterId], references: [id])
+  voter   Voter @relation(fields: [voterId], references: [id], onDelete: Cascade)
 
   responsiblerId Int
-  responsibler   Responsibler @relation(fields: [responsiblerId], references: [id])
+  responsibler   Responsibler @relation(fields: [responsiblerId], references: [id], onDelete: Cascade)
 }
