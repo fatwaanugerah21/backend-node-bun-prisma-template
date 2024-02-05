@@ -24,6 +24,9 @@ model District {
   id   Int    @id @default(autoincrement())
   name String @unique
 
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @default(now()) @updatedAt
+
   subdistricts Subdistrict[]
 }
 
@@ -32,7 +35,11 @@ model Subdistrict {
   name String @unique
 
   districtName String
-  district     District @relation(fields: [districtName], references: [name], onDelete: Cascade)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @default(now()) @updatedAt
+
+  district District @relation(fields: [districtName], references: [name], onDelete: Cascade)
 }
 
 model Voter {
@@ -53,6 +60,9 @@ model Voter {
   hamlet               String
   pollingPlaceNumber   String
 
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @default(now()) @updatedAt
+
   responsiblerVoters ResponsiblerVoter[]
 }
 
@@ -72,6 +82,9 @@ model Responsibler {
 
   realVoter Int @default(0)
 
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @default(now()) @updatedAt
+
   responsiblerVoters ResponsiblerVoter[]
 }
 
@@ -83,4 +96,7 @@ model ResponsiblerVoter {
 
   responsiblerId Int
   responsibler   Responsibler @relation(fields: [responsiblerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @default(now()) @updatedAt
 }

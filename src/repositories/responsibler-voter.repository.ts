@@ -99,9 +99,7 @@ class ResponsiblerVoterRepository {
           responsiblerId,
         },
         orderBy: {
-          voter: {
-            familyCardNumber: "asc",
-          },
+          createdAt: "asc",
         },
         select: {
           id: true,
