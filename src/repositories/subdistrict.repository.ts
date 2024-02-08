@@ -63,7 +63,7 @@ class SubdistrictRepository {
     }
   }
 
-  static async getSubdistricts(districtName: string) {
+  static async getSubdistricts(districtName?: string) {
     try {
       const resp = await DatabaseLib.models.subdistrict.findMany({
         orderBy: { districtName: "asc" },

@@ -104,11 +104,14 @@ class ResponsiblerRepository {
   static async getResponsiblersWithResponsiblerVoters({
     districtName,
     subdistrictName,
+    votingPlaceNumber,
   }: {
     districtName: string;
     subdistrictName: string;
     votingPlaceNumber: string;
   }) {
+    console.log("votingPlaceNumber: ", votingPlaceNumber);
+
     try {
       const resp = await DatabaseLib.models.responsibler.findMany({
         orderBy: {
@@ -117,6 +120,7 @@ class ResponsiblerRepository {
         where: {
           districtName,
           subdistrictName,
+          vottingPlaceNumber: votingPlaceNumber,
           responsiblerVoters: { some: {} },
         },
         select: this.genSelect,

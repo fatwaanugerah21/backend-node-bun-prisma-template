@@ -1,6 +1,4 @@
-import { Prisma } from "@prisma/client";
 import DatabaseLib from "../libs/database.lib";
-import { TFetchAllParams } from "../types/indexType";
 
 export type TCreateResponsiblerVoterBody = {
   voterId: number;
@@ -86,6 +84,60 @@ class ResponsiblerVoterRepository {
         });
 
       return distinctDistrictAndSubdistrictWithCount;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  static async getTotalResponsiblerVoters() {
+    try {
+      const count = await DatabaseLib.models.responsiblerVoter.count({});
+
+      return count;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  static async getTotalResponsiblerVotersCountPerSubddistrict(
+    subdistrictName: string
+  ) {
+    try {
+      const count = await DatabaseLib.models.responsiblerVoter.count({
+        where: {
+          voter: {
+            subdistrictName,
+          },
+        },
+      });
+
+      return count;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  static async getResponsiblerVotersPerSubddistrict(subdistrictName: string) {
+    try {
+      const voters = await DatabaseLib.models.responsiblerVoter.findMany({
+        where: {
+          voter: {
+            subdistrictName,
+          },
+        },
+        select: {
+          voter: {
+            select: {
+              pollingPlaceNumber: true,
+            },
+          },
+        },
+      });
+
+      return voters;
     } catch (error) {
       console.error(error);
       throw error;

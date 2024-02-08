@@ -11,6 +11,14 @@ class ResponsiblerVoterRoute {
       ResponsiblerVoterController.getAllDuplicate
     );
     this.router.get(
+      "/total",
+      ResponsiblerVoterController.getTotalResponsiblerVotersCount
+    );
+    this.router.get(
+      "/total/:subdistrictName",
+      ResponsiblerVoterController.getTotalResponsiblerVotersPerSubdistrictCount
+    );
+    this.router.get(
       "/inputted-district-and-subdistrict",
       ResponsiblerVoterController.getInputtedDistrictAndSubdistricts
     );

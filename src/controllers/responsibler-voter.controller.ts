@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { errorResponse, successResponse } from "../utils/responses.util";
 import ResponsiblerVoterRepository from "../repositories/responsibler-voter.repository";
+import SubdistrictRepository from "../repositories/subdistrict.repository";
 
 class ResponsiblerVoterController {
   static async create(req: Request, resp: Response) {
@@ -36,6 +37,64 @@ class ResponsiblerVoterController {
         await ResponsiblerVoterRepository.getResponsiblerVoterDuplicate();
 
       resp.json(successResponse(duplicates));
+    } catch (error) {
+      console.error(error);
+      resp.json(errorResponse(error + ""));
+    }
+  }
+
+  static async getTotalResponsiblerVotersPerSubdistrictCount(
+    req: Request,
+    resp: Response
+  ) {
+    try {
+      const { subdistrictName } = req.params;
+      const responsiblerVotersListOfSubdistrict =
+        await ResponsiblerVoterRepository.getResponsiblerVotersPerSubddistrict(
+          subdistrictName
+        );
+
+      const subdistrictsTotal: { [x in string]: number } = {
+        total: responsiblerVotersListOfSubdistrict.length,
+      };
+
+      responsiblerVotersListOfSubdistrict.forEach((rv) => {
+        if (!subdistrictsTotal[rv.voter.pollingPlaceNumber])
+          subdistrictsTotal[rv.voter.pollingPlaceNumber] = 1;
+        else
+          subdistrictsTotal[rv.voter.pollingPlaceNumber] =
+            subdistrictsTotal[rv.voter.pollingPlaceNumber] + 1;
+      });
+
+      resp.json(successResponse(subdistrictsTotal));
+    } catch (error) {
+      console.error(error);
+      resp.json(errorResponse(error + ""));
+    }
+  }
+
+  static async getTotalResponsiblerVotersCount(req: Request, resp: Response) {
+    try {
+      const subdistricts = await SubdistrictRepository.getSubdistricts();
+      const totalResponsiblerVoters =
+        await ResponsiblerVoterRepository.getTotalResponsiblerVoters();
+
+      const subdistrictsTotal: { [x in string]: number } = {
+        total: totalResponsiblerVoters,
+      };
+
+      await Promise.all(
+        subdistricts.map(async (subdistrict) => {
+          const subdistrictTotal =
+            await ResponsiblerVoterRepository.getTotalResponsiblerVotersCountPerSubddistrict(
+              subdistrict.name
+            );
+
+          subdistrictsTotal[subdistrict.name] = subdistrictTotal;
+        })
+      );
+
+      resp.json(successResponse(subdistrictsTotal));
     } catch (error) {
       console.error(error);
       resp.json(errorResponse(error + ""));
