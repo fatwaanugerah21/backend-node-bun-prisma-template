@@ -15,6 +15,9 @@
     "type": "git",
     "url": "git+https://gitlab.com/Ashaffah/express-typescript.git"
   },
+  "resolutions": {
+    "engine.io": "6.5.1"
+  },
   "author": "Ashaffah",
   "license": "MIT",
   "bugs": {
