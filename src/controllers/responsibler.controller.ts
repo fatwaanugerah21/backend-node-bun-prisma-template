@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
 import { errorResponse, successResponse } from "../utils/responses.util";
-import ResponsiblerRepository, {
-  TCreateResponsiblerBody,
-} from "../repositories/responsibler.repository";
+import ResponsiblerRepository, { TCreateResponsiblerBody } from "../repositories/responsibler.repository";
 import DatabaseLib from "../libs/database.lib";
 
 class ResponsiblerController {
@@ -10,9 +8,7 @@ class ResponsiblerController {
     try {
       const body = req.body as { responsibler: TCreateResponsiblerBody };
 
-      const response = await ResponsiblerRepository.createResponsibler(
-        body.responsibler
-      );
+      const response = await ResponsiblerRepository.createResponsibler(body.responsibler);
 
       resp.json(successResponse(response));
     } catch (error) {
@@ -25,9 +21,7 @@ class ResponsiblerController {
     try {
       const body = req.body as { responsiblers: TCreateResponsiblerBody[] };
 
-      const response = await ResponsiblerRepository.createResponsiblers(
-        body.responsiblers
-      );
+      const response = await ResponsiblerRepository.createResponsiblers(body.responsiblers);
 
       resp.json(successResponse(response));
     } catch (error) {
@@ -38,8 +32,7 @@ class ResponsiblerController {
 
   static async getAll(req: Request, resp: Response) {
     try {
-      const { districtName, subdistrictName, votingPlaceNumber }: any =
-        req.query;
+      const { districtName, subdistrictName, votingPlaceNumber }: any = req.query;
 
       const responsiblers = await ResponsiblerRepository.getResponsiblers({
         districtName,
@@ -56,15 +49,15 @@ class ResponsiblerController {
 
   static async getAllWithResponsiblerVoters(req: Request, resp: Response) {
     try {
-      const { districtName, subdistrictName, votingPlaceNumber }: any =
-        req.query;
+      const { districtName, subdistrictName, votingPlaceNumber, isKipOnly, maximumVoters }: any = req.query;
 
-      const responsiblers =
-        await ResponsiblerRepository.getResponsiblersWithResponsiblerVoters({
-          districtName,
-          subdistrictName,
-          votingPlaceNumber,
-        });
+      const responsiblers = await ResponsiblerRepository.getResponsiblersWithResponsiblerVoters({
+        districtName,
+        subdistrictName,
+        votingPlaceNumber,
+        isKipOnly: isKipOnly === "true",
+        maximumVoters: parseInt(maximumVoters || "0"),
+      });
 
       resp.json(successResponse(responsiblers));
     } catch (error) {
@@ -78,9 +71,7 @@ class ResponsiblerController {
       const { id } = req.params;
       if (!id) throw `ID_NOT_PROVIDED`;
 
-      const districts = await ResponsiblerRepository.getResponsiblerById(
-        parseInt(id as string)
-      );
+      const districts = await ResponsiblerRepository.getResponsiblerById(parseInt(id as string));
 
       resp.json(successResponse(districts));
     } catch (error) {
@@ -95,9 +86,7 @@ class ResponsiblerController {
 
       if (!id) throw `ID_NOT_PROVIDED`;
 
-      const district = await ResponsiblerRepository.deleteResponsiblerById(
-        parseInt(id as string)
-      );
+      const district = await ResponsiblerRepository.deleteResponsiblerById(parseInt(id as string));
 
       resp.json(successResponse(district));
     } catch (error) {

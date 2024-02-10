@@ -101,16 +101,9 @@ class ResponsiblerRepository {
     }
   }
 
-  static async getResponsiblersWithResponsiblerVoters({
-    districtName,
-    subdistrictName,
-    votingPlaceNumber,
-  }: {
-    districtName: string;
-    subdistrictName: string;
-    votingPlaceNumber: string;
-  }) {
-    console.log("votingPlaceNumber: ", votingPlaceNumber);
+  static async getResponsiblersWithResponsiblerVoters({ districtName, subdistrictName, votingPlaceNumber, isKipOnly, maximumVoters }: { districtName: string; subdistrictName: string; votingPlaceNumber: string; isKipOnly: boolean; maximumVoters: number }) {
+    console.log("maximumVoters: ", maximumVoters);
+    console.log("true | false: ", !!maximumVoters);
 
     try {
       const resp = await DatabaseLib.models.responsibler.findMany({
@@ -121,27 +114,26 @@ class ResponsiblerRepository {
           districtName,
           subdistrictName,
           vottingPlaceNumber: votingPlaceNumber,
-          responsiblerVoters: { some: {} },
+          ...(!!isKipOnly ? { isKip: true } : {}),
+          responsiblerVoters: {
+            some: {},
+          },
         },
         select: this.genSelect,
       });
 
-      return resp;
+      const filtered = resp.filter((r) => {
+        return r.responsiblerVoters.length <= maximumVoters;
+      });
+
+      return !!maximumVoters ? filtered : resp;
     } catch (error) {
       console.log("Error on service: ", error);
       throw error;
     }
   }
 
-  static async getResponsiblers({
-    districtName,
-    subdistrictName,
-    votingPlaceNumber,
-  }: {
-    districtName: string;
-    subdistrictName: string;
-    votingPlaceNumber: string;
-  }) {
+  static async getResponsiblers({ districtName, subdistrictName, votingPlaceNumber }: { districtName: string; subdistrictName: string; votingPlaceNumber: string }) {
     try {
       const resp = await DatabaseLib.models.responsibler.findMany({
         orderBy: {
