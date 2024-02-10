@@ -102,9 +102,6 @@ class ResponsiblerRepository {
   }
 
   static async getResponsiblersWithResponsiblerVoters({ districtName, subdistrictName, votingPlaceNumber, isKipOnly, maximumVoters }: { districtName: string; subdistrictName: string; votingPlaceNumber: string; isKipOnly: boolean; maximumVoters: number }) {
-    console.log("maximumVoters: ", maximumVoters);
-    console.log("true | false: ", !!maximumVoters);
-
     try {
       const resp = await DatabaseLib.models.responsibler.findMany({
         orderBy: {
