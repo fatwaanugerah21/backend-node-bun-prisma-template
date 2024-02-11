@@ -8,8 +8,7 @@ class ResponsiblerVoterController {
     try {
       const body = req.body as { responsiblerId: number; voterId: number };
 
-      const response =
-        await ResponsiblerVoterRepository.createResponsiblerVoter(body);
+      const response = await ResponsiblerVoterRepository.createResponsiblerVoter(body);
 
       resp.json(successResponse(response));
     } catch (error) {
@@ -21,9 +20,7 @@ class ResponsiblerVoterController {
   static async getAll(req: Request, resp: Response) {
     try {
       const { responsiblerId } = req.query;
-      const districts = await ResponsiblerVoterRepository.getResponsiblerVoters(
-        parseInt(responsiblerId as string)
-      );
+      const districts = await ResponsiblerVoterRepository.getResponsiblerVoters(parseInt(responsiblerId as string));
       resp.json(successResponse(districts));
     } catch (error) {
       console.error(error);
@@ -33,8 +30,9 @@ class ResponsiblerVoterController {
 
   static async getAllDuplicate(req: Request, resp: Response) {
     try {
-      const duplicates =
-        await ResponsiblerVoterRepository.getResponsiblerVoterDuplicate();
+      const { subdistrictName } = req.query;
+
+      const duplicates = await ResponsiblerVoterRepository.getResponsiblerVoterDuplicate((subdistrictName as string) || undefined);
 
       resp.json(successResponse(duplicates));
     } catch (error) {
@@ -43,27 +41,18 @@ class ResponsiblerVoterController {
     }
   }
 
-  static async getTotalResponsiblerVotersPerSubdistrictCount(
-    req: Request,
-    resp: Response
-  ) {
+  static async getTotalResponsiblerVotersPerSubdistrictCount(req: Request, resp: Response) {
     try {
       const { subdistrictName } = req.params;
-      const responsiblerVotersListOfSubdistrict =
-        await ResponsiblerVoterRepository.getResponsiblerVotersPerSubddistrict(
-          subdistrictName
-        );
+      const responsiblerVotersListOfSubdistrict = await ResponsiblerVoterRepository.getResponsiblerVotersPerSubddistrict(subdistrictName);
 
       const subdistrictsTotal: { [x in string]: number } = {
         total: responsiblerVotersListOfSubdistrict.length,
       };
 
       responsiblerVotersListOfSubdistrict.forEach((rv) => {
-        if (!subdistrictsTotal[rv.voter.pollingPlaceNumber])
-          subdistrictsTotal[rv.voter.pollingPlaceNumber] = 1;
-        else
-          subdistrictsTotal[rv.voter.pollingPlaceNumber] =
-            subdistrictsTotal[rv.voter.pollingPlaceNumber] + 1;
+        if (!subdistrictsTotal[rv.voter.pollingPlaceNumber]) subdistrictsTotal[rv.voter.pollingPlaceNumber] = 1;
+        else subdistrictsTotal[rv.voter.pollingPlaceNumber] = subdistrictsTotal[rv.voter.pollingPlaceNumber] + 1;
       });
 
       resp.json(successResponse(subdistrictsTotal));
@@ -76,8 +65,7 @@ class ResponsiblerVoterController {
   static async getTotalResponsiblerVotersCount(req: Request, resp: Response) {
     try {
       const subdistricts = await SubdistrictRepository.getSubdistricts();
-      const totalResponsiblerVoters =
-        await ResponsiblerVoterRepository.getTotalResponsiblerVoters();
+      const totalResponsiblerVoters = await ResponsiblerVoterRepository.getTotalResponsiblerVoters();
 
       const subdistrictsTotal: { [x in string]: number } = {
         total: totalResponsiblerVoters,
@@ -85,10 +73,7 @@ class ResponsiblerVoterController {
 
       await Promise.all(
         subdistricts.map(async (subdistrict) => {
-          const subdistrictTotal =
-            await ResponsiblerVoterRepository.getTotalResponsiblerVotersCountPerSubddistrict(
-              subdistrict.name
-            );
+          const subdistrictTotal = await ResponsiblerVoterRepository.getTotalResponsiblerVotersCountPerSubddistrict(subdistrict.name);
 
           subdistrictsTotal[subdistrict.name] = subdistrictTotal;
         })
@@ -101,13 +86,9 @@ class ResponsiblerVoterController {
     }
   }
 
-  static async getInputtedDistrictAndSubdistricts(
-    req: Request,
-    resp: Response
-  ) {
+  static async getInputtedDistrictAndSubdistricts(req: Request, resp: Response) {
     try {
-      const districtAndSubdistrictWithCount =
-        await ResponsiblerVoterRepository.getInputtedDistrictAndSubdistricts();
+      const districtAndSubdistrictWithCount = await ResponsiblerVoterRepository.getInputtedDistrictAndSubdistricts();
 
       resp.json(successResponse(districtAndSubdistrictWithCount));
     } catch (error) {
@@ -121,10 +102,7 @@ class ResponsiblerVoterController {
       const { id } = req.params;
       if (!id) throw `ID_NOT_PROVIDED`;
 
-      const districts =
-        await ResponsiblerVoterRepository.getResponsiblerVoterById(
-          parseInt(id as string)
-        );
+      const districts = await ResponsiblerVoterRepository.getResponsiblerVoterById(parseInt(id as string));
 
       resp.json(successResponse(districts));
     } catch (error) {
@@ -139,10 +117,7 @@ class ResponsiblerVoterController {
 
       if (!id) throw `ID_NOT_PROVIDED`;
 
-      const district =
-        await ResponsiblerVoterRepository.deleteResponsiblerVoterById(
-          parseInt(id as string)
-        );
+      const district = await ResponsiblerVoterRepository.deleteResponsiblerVoterById(parseInt(id as string));
 
       resp.json(successResponse(district));
     } catch (error) {

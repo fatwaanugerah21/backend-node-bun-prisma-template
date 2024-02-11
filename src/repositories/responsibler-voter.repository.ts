@@ -32,10 +32,7 @@ class ResponsiblerVoterRepository {
     }
   }
 
-  static async updateResponsiblerVoter(
-    id: number,
-    data: TCreateResponsiblerVoterBody
-  ) {
+  static async updateResponsiblerVoter(id: number, data: TCreateResponsiblerVoterBody) {
     try {
       const resp = await DatabaseLib.models.responsiblerVoter.update({
         where: { id },
@@ -75,13 +72,12 @@ class ResponsiblerVoterRepository {
 
   static async getInputtedDistrictAndSubdistricts() {
     try {
-      const distinctDistrictAndSubdistrictWithCount =
-        await DatabaseLib.models.voter.groupBy({
-          by: ["districtName", "subdistrictName"],
-          where: {
-            responsiblerVoters: { some: {} },
-          },
-        });
+      const distinctDistrictAndSubdistrictWithCount = await DatabaseLib.models.voter.groupBy({
+        by: ["districtName", "subdistrictName"],
+        where: {
+          responsiblerVoters: { some: {} },
+        },
+      });
 
       return distinctDistrictAndSubdistrictWithCount;
     } catch (error) {
@@ -101,9 +97,7 @@ class ResponsiblerVoterRepository {
     }
   }
 
-  static async getTotalResponsiblerVotersCountPerSubddistrict(
-    subdistrictName: string
-  ) {
+  static async getTotalResponsiblerVotersCountPerSubddistrict(subdistrictName: string) {
     try {
       const count = await DatabaseLib.models.responsiblerVoter.count({
         where: {
@@ -186,35 +180,35 @@ class ResponsiblerVoterRepository {
     }
   }
 
-  static async getResponsiblerVoterDuplicate() {
+  static async getResponsiblerVoterDuplicate(subdistrictName?: string) {
     try {
-      const responsiblerVoters =
-        await DatabaseLib.models.responsiblerVoter.findMany({
-          select: {
-            id: true,
-            responsiblerId: true,
-            voterId: true,
-            responsibler: {
-              include: { responsiblerVoters: {} },
-            },
-            voter: {},
+      const responsiblerVoters = await DatabaseLib.models.responsiblerVoter.findMany({
+        select: {
+          id: true,
+          responsiblerId: true,
+          voterId: true,
+          responsibler: {
+            include: { responsiblerVoters: {} },
           },
-        });
+          voter: {},
+        },
+      });
 
       // Group rows by voterId
       const groupedByVoterId = responsiblerVoters.reduce((acc: any, row) => {
-        console.log("row:", row);
-
         const voterId = row.voterId.toString(); // Convert to string for consistent grouping
         acc[voterId] = acc[voterId] || [];
-        acc[voterId].push(row);
+        if (!!subdistrictName) {
+          console.log("subdistrictName: ", subdistrictName);
+          console.log("row.responsibler.subdistrictName: ", row.responsibler.subdistrictName);
+
+          if ([row.responsibler.subdistrictName, row.voter.subdistrictName].includes(subdistrictName)) acc[voterId].push(row);
+        } else acc[voterId].push(row);
         return acc;
       }, {});
 
       // Filter out groups with only one row
-      const duplicateGroups = Object.values(groupedByVoterId).filter(
-        (group: any) => group.length > 1
-      );
+      const duplicateGroups = Object.values(groupedByVoterId).filter((group: any) => group.length > 1);
 
       return duplicateGroups;
     } catch (error) {
