@@ -49,12 +49,13 @@ class ResponsiblerController {
 
   static async getAllWithResponsiblerVoters(req: Request, resp: Response) {
     try {
-      const { districtName, subdistrictName, votingPlaceNumber, isKipOnly, maximumVoters }: any = req.query;
+      const { districtName, subdistrictName, votingPlaceNumber, isKipOnly, maximumVoters, coordinatorName }: any = req.query;
 
       const responsiblers = await ResponsiblerRepository.getResponsiblersWithResponsiblerVoters({
         districtName,
         subdistrictName,
         votingPlaceNumber,
+        coordinatorName,
         isKipOnly: isKipOnly === "true",
         maximumVoters: parseInt(maximumVoters || "0"),
       });

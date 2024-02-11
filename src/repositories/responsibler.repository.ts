@@ -101,7 +101,7 @@ class ResponsiblerRepository {
     }
   }
 
-  static async getResponsiblersWithResponsiblerVoters({ districtName, subdistrictName, votingPlaceNumber, isKipOnly, maximumVoters }: { districtName: string; subdistrictName: string; votingPlaceNumber: string; isKipOnly: boolean; maximumVoters: number }) {
+  static async getResponsiblersWithResponsiblerVoters({ districtName, subdistrictName, votingPlaceNumber, isKipOnly, maximumVoters, coordinatorName }: { districtName: string; subdistrictName: string; votingPlaceNumber: string; isKipOnly: boolean; maximumVoters: number; coordinatorName: string }) {
     try {
       const resp = await DatabaseLib.models.responsibler.findMany({
         orderBy: {
@@ -110,6 +110,9 @@ class ResponsiblerRepository {
         where: {
           districtName,
           subdistrictName,
+          coordinatorName: {
+            contains: coordinatorName,
+          },
           vottingPlaceNumber: votingPlaceNumber,
           ...(!!isKipOnly ? { isKip: true } : {}),
           responsiblerVoters: {
