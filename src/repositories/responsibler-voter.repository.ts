@@ -200,6 +200,11 @@ class ResponsiblerVoterRepository {
   static async getResponsiblerVoterDuplicate(subdistrictName?: string) {
     try {
       const responsiblerVoters = await DatabaseLib.models.responsiblerVoter.findMany({
+        where: {
+          voter: {
+            subdistrictName,
+          },
+        },
         select: {
           id: true,
           responsiblerId: true,
@@ -216,9 +221,6 @@ class ResponsiblerVoterRepository {
         const voterId = row.voterId.toString(); // Convert to string for consistent grouping
         acc[voterId] = acc[voterId] || [];
         if (!!subdistrictName) {
-          console.log("subdistrictName: ", subdistrictName);
-          console.log("row.responsibler.subdistrictName: ", row.responsibler.subdistrictName);
-
           if ([row.responsibler.subdistrictName, row.voter.subdistrictName].includes(subdistrictName)) acc[voterId].push(row);
         } else acc[voterId].push(row);
         return acc;
