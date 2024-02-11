@@ -6,22 +6,11 @@ class ResponsiblerVoterRoute {
 
   static routes(): Router {
     this.router.post("/", ResponsiblerVoterController.create);
-    this.router.get(
-      "/all-duplicate",
-      ResponsiblerVoterController.getAllDuplicate
-    );
-    this.router.get(
-      "/total",
-      ResponsiblerVoterController.getTotalResponsiblerVotersCount
-    );
-    this.router.get(
-      "/total/:subdistrictName",
-      ResponsiblerVoterController.getTotalResponsiblerVotersPerSubdistrictCount
-    );
-    this.router.get(
-      "/inputted-district-and-subdistrict",
-      ResponsiblerVoterController.getInputtedDistrictAndSubdistricts
-    );
+    this.router.get("/all-duplicate", ResponsiblerVoterController.getAllDuplicate);
+    this.router.get("/is-duplicate", ResponsiblerVoterController.checkIsDuplicate);
+    this.router.get("/total", ResponsiblerVoterController.getTotalResponsiblerVotersCount);
+    this.router.get("/total/:subdistrictName", ResponsiblerVoterController.getTotalResponsiblerVotersPerSubdistrictCount);
+    this.router.get("/inputted-district-and-subdistrict", ResponsiblerVoterController.getInputtedDistrictAndSubdistricts);
     this.router.get("/", ResponsiblerVoterController.getAll);
     this.router.get("/", ResponsiblerVoterController.getAll);
     this.router.get("/:id", ResponsiblerVoterController.getById);

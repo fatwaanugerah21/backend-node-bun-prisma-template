@@ -17,11 +17,35 @@ class ResponsiblerVoterController {
     }
   }
 
+  static async checkIsDuplicate(req: Request, resp: Response) {
+    try {
+      const { voterIndividualNumber } = req.query as { voterIndividualNumber: string };
+
+      const response = await ResponsiblerVoterRepository.checkIsDuplicateVoter(voterIndividualNumber);
+
+      resp.json(successResponse(response));
+    } catch (error) {
+      console.error(error);
+      resp.json(errorResponse(error + ""));
+    }
+  }
+
   static async getAll(req: Request, resp: Response) {
     try {
       const { responsiblerId } = req.query;
-      const districts = await ResponsiblerVoterRepository.getResponsiblerVoters(parseInt(responsiblerId as string));
-      resp.json(successResponse(districts));
+      const rvs = await ResponsiblerVoterRepository.getResponsiblerVoters(parseInt(responsiblerId as string));
+
+      const formatted = await Promise.all(
+        rvs.map(async (rv) => {
+          const isDuplicate = await ResponsiblerVoterRepository.checkIsDuplicateVoter(rv.voter.individualCardNumber);
+
+          (rv as any).voter.isDuplicate = isDuplicate;
+
+          return rv;
+        })
+      );
+
+      resp.json(successResponse(formatted));
     } catch (error) {
       console.error(error);
       resp.json(errorResponse(error + ""));

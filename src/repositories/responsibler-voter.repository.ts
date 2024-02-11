@@ -32,6 +32,23 @@ class ResponsiblerVoterRepository {
     }
   }
 
+  static async checkIsDuplicateVoter(voterIndividualNumber: string) {
+    try {
+      const rvs = await DatabaseLib.models.responsiblerVoter.findMany({
+        where: {
+          voter: {
+            individualCardNumber: voterIndividualNumber,
+          },
+        },
+      });
+
+      return rvs.length > 1;
+    } catch (error) {
+      console.log("Error on service: ", error);
+      throw error;
+    }
+  }
+
   static async updateResponsiblerVoter(id: number, data: TCreateResponsiblerVoterBody) {
     try {
       const resp = await DatabaseLib.models.responsiblerVoter.update({
